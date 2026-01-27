@@ -1,9 +1,13 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted } from 'vue'
 import BaseContainer from '@/components/ui/BaseContainer.vue'
 import TestimonialCard from '@/components/functional/TestimonialCard.vue'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-const testimonials = ref([
+gsap.registerPlugin(ScrollTrigger)
+
+const testimonials = [
     {
         id: 1,
         text: 'Lorem ipsum dolor sit amet, consect adipiscing elit. Varius enim in eros elementum tristique.',
@@ -13,66 +17,101 @@ const testimonials = ref([
     {
         id: 2,
         text: 'Lorem ipsum dolor sit amet, consect adipiscing edit. Varius enim in eros elementum tristique.',
-        author: 'John Doe',
+        author: 'Jane Smith',
         avatar: null
     },
     {
         id: 3,
         text: 'Lorem ipsum dolor sit amet, consect adipiscing edit. Varius enim in eros elementum tristique.',
-        author: 'John Doe',
+        author: 'Robert Fox',
         avatar: null
     },
     {
         id: 4,
         text: 'Lorem ipsum dolor sit amet, consect adipiscing edit. Varius enim in eros elementum tristique.',
-        author: 'John Doe',
+        author: 'Emily Davis',
         avatar: null
     },
     {
         id: 5,
         text: 'Lorem ipsum dolor sit amet, consect adipiscing edit. Varius enim in eros elementum tristique.',
-        author: 'John Doe',
+        author: 'Michael Brown',
         avatar: null
     },
     {
         id: 6,
         text: 'Lorem ipsum dolor sit amet, consect adipiscing edit. Varius enim in eros elementum tristique.',
-        author: 'John Doe',
+        author: 'Sarah Wilson',
         avatar: null
     }
-])
+]
 
-// Dividir em duas linhas para o efeito de ticker
-const row1 = testimonials.value.slice(0, 3)
-const row2 = testimonials.value.slice(3, 6)
+// Tripled for smoother longer screens
+const infiniteList = [...testimonials, ...testimonials, ...testimonials]
+
+onMounted(() => {
+    // Reveal Section
+    gsap.from('.testimonial-section-container', {
+        scrollTrigger: {
+            trigger: '.testimonial-section',
+            start: 'top 80%',
+        },
+        y: 60,
+        opacity: 0,
+        duration: 1.0,
+        ease: 'power3.out'
+    })
+
+    // Reveal Rows staggered
+    gsap.from('.marquee-row', {
+        scrollTrigger: {
+            trigger: '.testimonial-section',
+            start: 'top 70%',
+        },
+        x: -50,
+        opacity: 0,
+        duration: 1.2,
+        stagger: 0.2,
+        ease: 'power2.out'
+    })
+})
 </script>
 
 <template>
-    <section class="py-12 md:py-16 overflow-hidden bg-gray-50">
-        <BaseContainer>
-            <!-- Row 1 - Scroll Left -->
-            <div class="relative mb-6">
-                <div class="flex gap-4 animate-scroll-left">
-                    <TestimonialCard v-for="testimonial in [...row1, ...row1]"
-                        :key="`r1-${testimonial.id}-${Math.random()}`" :testimonial="testimonial"
-                        class="flex-shrink-0 w-[300px] md:w-[350px]" />
+    <section class="testimonial-section py-16 md:py-24 bg-gray-50 overflow-hidden">
+        <BaseContainer class="testimonial-section-container px-0! max-w-none">
+
+            <div class="relative w-full flex flex-col gap-8 md:gap-12">
+                <!-- Fade Edges -->
+                <div
+                    class="absolute inset-y-0 left-0 w-20 md:w-32 bg-linear-to-r from-gray-50 to-transparent z-10 pointer-events-none">
+                </div>
+                <div
+                    class="absolute inset-y-0 right-0 w-20 md:w-32 bg-linear-to-l from-gray-50 to-transparent z-10 pointer-events-none">
+                </div>
+
+                <!-- Row 1: Left -->
+                <div class="marquee-row flex w-max animate-marquee hover:[animation-play-state:paused] gap-6 px-6">
+                    <div v-for="(t, index) in infiniteList" :key="`row1-${index}`" class="w-75 md:w-100 shrink-0">
+                        <TestimonialCard :testimonial="t" />
+                    </div>
+                </div>
+
+                <!-- Row 2: Right (Reverse) -->
+                <div
+                    class="marquee-row flex w-max animate-marquee-reverse hover:[animation-play-state:paused] gap-6 px-6">
+                    <div v-for="(t, index) in infiniteList" :key="`row2-${index}`" class="w-75 md:w-100 shrink-0">
+                        <TestimonialCard :testimonial="t" />
+                    </div>
                 </div>
             </div>
 
-            <!-- Row 2 - Scroll Right -->
-            <div class="relative">
-                <div class="flex gap-4 animate-scroll-right">
-                    <TestimonialCard v-for="testimonial in [...row2, ...row2]"
-                        :key="`r2-${testimonial.id}-${Math.random()}`" :testimonial="testimonial"
-                        class="flex-shrink-0 w-[300px] md:w-[350px]" />
-                </div>
-            </div>
         </BaseContainer>
     </section>
 </template>
 
 <style scoped>
-@keyframes scroll-left {
+@keyframes marquee {
     0% {
         transform: translateX(0);
     }
@@ -82,7 +121,7 @@ const row2 = testimonials.value.slice(3, 6)
     }
 }
 
-@keyframes scroll-right {
+@keyframes marquee-reverse {
     0% {
         transform: translateX(-50%);
     }
@@ -92,16 +131,13 @@ const row2 = testimonials.value.slice(3, 6)
     }
 }
 
-.animate-scroll-left {
-    animation: scroll-left 30s linear infinite;
+.animate-marquee {
+    animation: marquee 60s linear infinite;
+    will-change: transform;
 }
 
-.animate-scroll-right {
-    animation: scroll-right 30s linear infinite;
-}
-
-.animate-scroll-left:hover,
-.animate-scroll-right:hover {
-    animation-play-state: paused;
+.animate-marquee-reverse {
+    animation: marquee-reverse 60s linear infinite;
+    will-change: transform;
 }
 </style>

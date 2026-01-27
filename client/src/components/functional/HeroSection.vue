@@ -1,63 +1,125 @@
 <script setup>
+import { onMounted, ref, computed } from 'vue'
+import { useMouseInElement } from '@vueuse/core'
+import gsap from 'gsap'
 import BaseContainer from '@/components/ui/BaseContainer.vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
+
+// Refs
+const heroContainer = ref(null)
+const heroImageRef = ref(null)
+const heroText = ref(null)
+
+// Parallax Logic
+const { elementX, elementY, isOutside, elementHeight, elementWidth } = useMouseInElement(heroContainer)
+
+const cardStyle = computed(() => {
+  if (isOutside.value) return {
+    transform: 'rotateX(0deg) rotateY(0deg)',
+    transition: 'transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)'
+  }
+
+  const x = elementX.value - elementWidth.value / 2
+  const y = elementY.value - elementHeight.value / 2
+
+  const rotateX = (y / elementHeight.value) * -3 // Reduced for premium feel
+  const rotateY = (x / elementWidth.value) * 3
+
+  return {
+    transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+    transition: 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
+  }
+})
+
+onMounted(() => {
+  const tl = gsap.timeline()
+
+  // Text Stagger
+  tl.from(heroText.value.children, {
+    y: 60,
+    opacity: 0,
+    duration: 1.2,
+    stagger: 0.15,
+    ease: 'power3.out'
+  })
+
+  // Image Pop
+  tl.from(heroContainer.value, {
+    y: 60,
+    opacity: 0,
+    scale: 0.98,
+    duration: 1.4,
+    ease: 'power2.out'
+  }, "-=1.0")
+})
+
+// Placeholder image for the headphones - using a high-quality Unsplash image that matches the vibe
+// In a real scenario, this would be an asset from the project
+const heroImage = "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=2070&auto=format&fit=crop"
 </script>
 
 <template>
-    <section class="py-8 md:py-12">
-        <BaseContainer>
-            <!-- Badge + Title -->
-            <div class="text-center mb-8">
-                <span class="inline-block px-3 py-1 text-xs font-semibold text-primary bg-primary/10 rounded-full mb-4">
-                    LIMITED OFFER
-                </span>
-                <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-950 leading-tight">
-                    All the products<br class="hidden sm:inline" />
-                    you ever wanted
-                </h1>
-            </div>
+  <section class="pt-8 pb-12 md:pt-12 md:pb-16 bg-white overflow-hidden">
+    <BaseContainer>
+      <!-- Header Text -->
+      <div ref="heroText" class="text-center max-w-4xl mx-auto mb-10 md:mb-14 relative z-10">
+        <span class="inline-block text-[10px] md:text-xs font-bold tracking-widest text-gray-500 uppercase mb-4">
+          Limited Offer
+        </span>
+        <h1 class="text-4xl md:text-6xl lg:text-[64px] font-bold text-[#0F1113] leading-[1.1] tracking-tight">
+          All the products<br class="hidden sm:block" />
+          you ever wanted
+        </h1>
+      </div>
 
-            <!-- Hero Banner -->
-            <div class="relative bg-hero-bg rounded-2xl overflow-hidden mb-8">
-                <div class="flex flex-col lg:flex-row items-center">
-                    <!-- Image Container -->
-                    <div class="w-full lg:w-1/2 h-48 sm:h-64 lg:h-80 flex items-center justify-center p-8">
-                        <!-- Placeholder para headphone - podemos usar imagem real depois -->
-                        <div class="relative">
-                            <svg class="w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 text-gray-200/20" viewBox="0 0 24 24"
-                                fill="currentColor">
-                                <path
-                                    d="M12 1a9 9 0 00-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7a9 9 0 00-9-9z" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <!-- Hero Banner (Yellow Box) -->
+      <div ref="heroContainer" class="relative w-full rounded-[32px] overflow-hidden mb-12 group perspective-container">
+        <!-- Background Color -->
+        <div class="absolute inset-0 bg-[#F9D52C] transition-transform duration-700 ease-out group-hover:scale-105">
+        </div>
 
-            <!-- Discount Info + CTA -->
-            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-                <div>
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-950 mb-1">
-                        Get 25% discount
-                    </h2>
-                    <p class="text-gray-800">only available today</p>
-                </div>
+        <!-- Content Container -->
+        <div class="relative h-[300px] md:h-[400px] lg:h-[500px] flex items-center justify-center" :style="cardStyle">
+          <!-- Product Image -->
+          <img ref="heroImageRef" :src="heroImage" alt="Premium Wireless Headphones" loading="eager"
+            class="w-full h-full object-cover shadow-2xl" />
+        </div>
+      </div>
 
-                <div class="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
-                    <p class="text-sm text-gray-400 max-w-xs text-center md:text-left">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Suspendisse varius enim in eros elementum tristique.
-                    </p>
-                    <div class="flex gap-3">
-                        <BaseButton variant="primary">
-                            Button
-                        </BaseButton>
-                        <BaseButton variant="secondary">
-                            Button
-                        </BaseButton>
-                    </div>
-                </div>
-            </div>
-        </BaseContainer>
-    </section>
+      <!-- Bottom Information Bar -->
+      <div class="flex flex-col md:flex-row items-center items-start justify-between gap-8 md:gap-12">
+        <!-- Discount Text -->
+        <div class="text-center md:text-left">
+          <h2 class="text-2xl md:text-3xl font-bold text-[#0F1113] leading-tight">
+            Get 25% discount
+          </h2>
+          <p class="text-2xl md:text-3xl font-bold text-[#0F1113] leading-tight opacity-50">
+            only available today
+          </p>
+        </div>
+
+        <!-- Description & Actions -->
+        <div class="flex flex-col md:flex-col items-start gap-6 md:gap-8 w-full md:w-auto">
+          <p class="text-sm md:text-base text-gray-500 max-w-sm text-center md:text-left leading-relaxed">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            Suspendisse varius enim in eros elementum tristique.
+            Duis cursus, mi quis viverra ornare.
+          </p>
+
+          <div class="flex items-center gap-3 w-full md:w-auto">
+            <BaseButton variant="primary" class="flex-1 md:flex-none justify-center px-8">
+              Button
+            </BaseButton>
+            <BaseButton variant="secondary" class="flex-1 md:flex-none justify-center px-8">
+              Button
+            </BaseButton>
+          </div>
+        </div>
+      </div>
+    </BaseContainer>
+  </section>
 </template>
+
+<style scoped>
+/* Optional: Add specific local animations if needed, currently using Tailwind utilities */
+</style>
