@@ -1,12 +1,27 @@
-const express = require("express");
-require("dotenv").config();
-const cors = require("cors");
+import express from "express";
+import cors from "cors";
+import { config as configDotenv } from "dotenv";
+import routes from "./routes/index.js";
+
+configDotenv();
 
 const app = express();
-app.use(cors());
 
-const PORT = "3000";
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Rotas
+app.use("/api", routes);
+
+// Rota de health check
+app.get("/health", (req, res) => {
+  res.json({ status: "OK", message: "API está funcionando" });
+});
+
+const PORT = process.env.PORT || "3000";
 
 app.listen(PORT, () => {
-  console.log("API On!");
+  console.log(`API On! Servidor rodando em http://localhost:${PORT}`);
 });
