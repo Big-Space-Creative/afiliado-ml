@@ -1,9 +1,11 @@
 <script setup>
 import { onMounted } from 'vue'
 import BaseContainer from '@/components/ui/BaseContainer.vue'
+import BaseButton from '@/components/ui/BaseButton.vue'
 import CategoryCard from './CategoryCard.vue'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { ArrowRight } from 'lucide-vue-next'
 import { useCategories } from '@/composables/useCategories'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -48,19 +50,20 @@ onMounted(() => {
           </h2>
         </div>
 
-        <p class="text-base text-slate-500 max-w-sm md:text-right">
-          A seleção mais refinada de tecnologias. Encontre rapidamente o que você busca na nossa matriz de produtos.
-        </p>
+        <BaseButton to="/categorias" variant="secondary" size="md" class="shrink-0 border-gray-200 text-gray-950 hover:bg-gray-100 group">
+          Ver todas as categorias
+          <ArrowRight class="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+        </BaseButton>
       </div>
 
       <!-- Bento Grid -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 auto-rows-[300px] md:auto-rows-[340px]">
-        <CategoryCard 
-          v-for="(category, index) in categories" 
+        <CategoryCard
+          v-for="(category, index) in categories.slice(0, 4)"
           :key="category.id"
           :category="category"
           :index="index"
-          :featured="index === 0"
+          :featured="index % 4 === 0 || index % 4 === 3"
         />
       </div>
     </BaseContainer>

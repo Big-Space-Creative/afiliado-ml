@@ -53,9 +53,9 @@ onMounted(() => {
           </p>
         </div>
 
-        <BaseButton variant="secondary" size="md"
+        <BaseButton to="/produtos/mais-clicados" variant="secondary" size="md"
           class="shrink-0 border-gray-200 text-gray-950 hover:bg-gray-100 group">
-          View All Products
+          Ver todos os produtos
           <ArrowRight class="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
         </BaseButton>
       </div>

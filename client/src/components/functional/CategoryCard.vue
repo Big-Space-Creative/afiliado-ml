@@ -19,7 +19,7 @@ const props = defineProps({
 
 // Formatação do número editorial com zero à esquerda
 const formattedNumber = computed(() => {
-  return `0${props.index + 1}`
+  return String(props.index + 1).padStart(2, '0')
 })
 </script>
 

@@ -16,7 +16,8 @@ const products = ref([
         image: null,
         badge: 'Best Seller',
         rating: 4.8,
-        reviewCount: 234
+        reviewCount: 234,
+        clickCount: 1241
     },
     {
         id: 2,
@@ -26,7 +27,8 @@ const products = ref([
         image: null,
         badge: 'New',
         rating: 4.9,
-        reviewCount: 89
+        reviewCount: 89,
+        clickCount: 980
     },
     {
         id: 3,
@@ -37,7 +39,8 @@ const products = ref([
         image: null,
         badge: 'Sale',
         rating: 4.7,
-        reviewCount: 156
+        reviewCount: 156,
+        clickCount: 845
     },
     {
         id: 4,
@@ -46,7 +49,8 @@ const products = ref([
         variant: 'Home Office',
         image: null,
         rating: 4.6,
-        reviewCount: 98
+        reviewCount: 98,
+        clickCount: 533
     },
     {
         id: 5,
@@ -56,7 +60,8 @@ const products = ref([
         image: null,
         badge: 'New',
         rating: 4.9,
-        reviewCount: 45
+        reviewCount: 45,
+        clickCount: 1268
     },
     {
         id: 6,
@@ -65,7 +70,8 @@ const products = ref([
         variant: 'Peripherals',
         image: null,
         rating: 4.5,
-        reviewCount: 312
+        reviewCount: 312,
+        clickCount: 1120
     }
 ])
 
