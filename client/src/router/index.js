@@ -16,14 +16,14 @@ const router = createRouter({
       component: () => import('../views/ProductDetailsView.vue'),
     },
     {
+      path: '/produtos',
+      name: 'CatalogView',
+      component: () => import('../views/TopClickedProductsView.vue'),
+    },
+    {
       path: '/categorias',
       name: 'CategoriesView',
       component: () => import('../views/CategoriesView.vue'),
-    },
-    {
-      path: '/produtos/mais-clicados',
-      name: 'TopClickedProductsView',
-      component: () => import('../views/TopClickedProductsView.vue'),
     },
     {
       path: '/admin/login',

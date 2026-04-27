@@ -32,7 +32,6 @@ gsap.registerPlugin(ScrollTrigger)
  */
 export function useScrollVelocity(elementRef, options = {}) {
     const {
-        baseVelocity = 50,
         direction = 'left',
         damping = 50,
         stiffness = 400,
@@ -40,7 +39,8 @@ export function useScrollVelocity(elementRef, options = {}) {
         triggerSelector = null
     } = options
 
-    // Estado interno
+    // Estado interno — baseVelocity é mutável para setVelocity funcionar
+    let baseVelocity = options.baseVelocity ?? 50
     let baseX = 0
     let scrollVelocity = 0
     let smoothVelocity = 0
@@ -152,7 +152,7 @@ export function useScrollVelocity(elementRef, options = {}) {
 
     // Atualiza a velocidade base dinamicamente
     const setVelocity = (newVelocity) => {
-        options.baseVelocity = newVelocity
+        baseVelocity = newVelocity
     }
 
     // Lifecycle hooks

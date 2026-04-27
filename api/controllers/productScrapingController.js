@@ -29,6 +29,10 @@ function parseBoolean(value, fallback = false) {
   return fallback;
 }
 
+function parseArray(value, fallback = []) {
+  return Array.isArray(value) ? value : fallback;
+}
+
 /**
  * @route POST /api/produtos/scraping
  * @description Faz scraping de um produto do Mercado Livre e cria no banco
@@ -106,6 +110,12 @@ export async function scrapeAndCreateProduto(req, res) {
     const ratingCount = parseNullableNumber(
       req.body.rating_count ?? req.body.avaliacao_qtd ?? produto.rateCount
     );
+    const images = parseArray(req.body.images, produto.images ?? []);
+    const reviewsData = parseArray(req.body.reviews_data ?? req.body.reviews, produto.reviews ?? []);
+    const variants = parseArray(req.body.variants, produto.variants ?? []);
+    const availability = req.body.availability ?? produto.availability ?? null;
+    const condition = req.body.condition ?? produto.condition ?? null;
+    const priceCurrency = req.body.price_currency ?? produto.price_currency ?? null;
     const status = req.body.status ?? 'active';
     const featured = parseBoolean(req.body.featured ?? req.body.destaque, false);
     const categoryIds = req.body.category_ids ?? req.body.categoria_ids ?? [];
@@ -144,6 +154,12 @@ export async function scrapeAndCreateProduto(req, res) {
       affiliate_url: finalAffiliateUrl,
       rating,
       rating_count: ratingCount,
+      images,
+      reviews_data: reviewsData,
+      variants,
+      availability,
+      condition,
+      price_currency: priceCurrency,
       status,
       featured,
     });

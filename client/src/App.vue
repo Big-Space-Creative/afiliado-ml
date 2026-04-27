@@ -14,7 +14,7 @@ const isDark = useDark()
 <template>
   <div
     :class="{ dark: isDark }"
-    class="min-h-screen bg-white dark:bg-neutral-950 text-gray-950 dark:text-neutral-100 flex flex-col transition-colors duration-300"
+    class="min-h-screen bg-surface text-text-main flex flex-col transition-colors duration-300"
   >
     <AppHeader v-if="!hideLayout" />
     <main class="flex-1">

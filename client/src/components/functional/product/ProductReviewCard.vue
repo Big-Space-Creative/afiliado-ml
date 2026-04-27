@@ -18,11 +18,11 @@ const starDistribution = computed(() => getStarDistribution(props.review?.rate))
 
 <template>
     <article
-        class="group relative flex flex-col p-5 md:p-6 bg-white border border-gray-100 rounded-2xl transition-all duration-300 hover:shadow-xl hover:shadow-gray-900/5 hover:border-gray-200 hover:-translate-y-1">
+        class="group relative flex flex-col p-5 md:p-6 bg-surface border border-border-sutil rounded-2xl transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 hover:border-primary/20 hover:-translate-y-1">
 
         <!-- Quote Icon Decorativo -->
         <div
-            class="absolute -top-3 -right-3 w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/25 opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:rotate-12">
+            class="absolute -top-3 -right-3 w-9 h-9 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/25 opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:rotate-12">
             <Quote class="w-4 h-4 text-white fill-white" />
         </div>
 
@@ -43,19 +43,19 @@ const starDistribution = computed(() => getStarDistribution(props.review?.rate))
         </div>
 
         <!-- Quote Text -->
-        <p class="text-sm md:text-base text-gray-700 leading-relaxed line-clamp-4">
+        <p class="text-sm md:text-base text-text-main leading-relaxed line-clamp-4">
             "{{ review.text }}"
         </p>
 
         <!-- Anonymous Badge -->
-        <div class="flex items-center gap-2 mt-4 pt-4 border-t border-gray-50">
-            <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-                <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+        <div class="flex items-center gap-2 mt-4 pt-4 border-t border-border-sutil">
+            <div class="w-8 h-8 rounded-full bg-surface-hover flex items-center justify-center">
+                <svg class="w-4 h-4 text-text-muted/50" fill="currentColor" viewBox="0 0 24 24">
                     <path
                         d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                 </svg>
             </div>
-            <span class="text-xs text-gray-400 font-medium">Comprador anônimo</span>
+            <span class="text-xs text-text-muted font-medium">Comprador anônimo</span>
         </div>
     </article>
 </template>

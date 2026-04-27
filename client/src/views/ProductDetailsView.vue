@@ -84,28 +84,28 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="bg-white">
+  <div class="bg-surface transition-colors duration-300">
     <!-- Product Hero Section -->
     <ProductHeroSection :product="product" :isLoading="isLoading" />
 
     <!-- Reviews Section (Premium Style) -->
-    <section ref="reviewsSection" class="reviews-section relative py-16 md:py-24 bg-gray-50 overflow-hidden">
+    <section ref="reviewsSection" class="reviews-section relative py-16 md:py-24 bg-surface-hover overflow-hidden transition-colors duration-300">
       <!-- Subtle Background Blobs -->
-      <div class="absolute -top-1/4 left-1/4 w-1/2 h-1/2 rounded-full bg-blue-50/40 blur-3xl pointer-events-none"></div>
-      <div class="absolute -bottom-1/4 right-1/4 w-1/3 h-1/3 rounded-full bg-amber-50/30 blur-3xl pointer-events-none">
+      <div class="absolute -top-1/4 left-1/4 w-1/2 h-1/2 rounded-full bg-primary/5 blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-1/4 right-1/4 w-1/3 h-1/3 rounded-full bg-surface/30 blur-3xl pointer-events-none">
       </div>
 
       <BaseContainer class="reviews-section-content">
         <!-- Section Header -->
         <div class="text-center max-w-2xl mx-auto mb-10 md:mb-14">
-          <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 mb-4">
-            <MessageCircle class="w-4 h-4 text-blue-600" />
-            <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Avaliações</span>
+          <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-4">
+            <MessageCircle class="w-4 h-4 text-primary" />
+            <span class="text-xs font-bold text-primary uppercase tracking-wider">Avaliações</span>
           </span>
-          <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-950 tracking-tight mb-3">
+          <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-text-main tracking-tight mb-3">
             O que dizem os compradores
           </h2>
-          <p class="text-sm md:text-base text-gray-500">
+          <p class="text-sm md:text-base text-text-muted">
             Veja as experiências de quem já adquiriu este produto.
           </p>
         </div>
@@ -119,7 +119,7 @@ onMounted(() => {
 
         <!-- Empty State -->
         <div v-else class="text-center py-12">
-          <p class="text-gray-400">Nenhuma avaliação disponível ainda.</p>
+          <p class="text-text-muted">Nenhuma avaliação disponível ainda.</p>
         </div>
       </BaseContainer>
     </section>

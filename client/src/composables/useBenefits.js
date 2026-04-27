@@ -8,23 +8,23 @@ import { Truck, Star, ShieldCheck, Lock } from 'lucide-vue-next'
 const benefits = [
     {
         icon: 'truck',
-        title: 'Free shipping & returns',
-        description: 'Orders over $50 ship free. Easy 30-day returns on all items.'
+        title: 'Frete Grátis e Devoluções',
+        description: 'Frete grátis em compras acima de R$ 200. Devolução fácil em até 30 dias.'
     },
     {
         icon: 'star',
-        title: 'Customers rate us 4.8',
-        description: 'Join 5,000+ happy customers who love our products.'
+        title: 'Avaliação 4.8 dos Clientes',
+        description: 'Junte-se a mais de 5.000 clientes satisfeitos que amam nossos produtos.'
     },
     {
         icon: 'shield',
-        title: '30 Day money back',
-        description: 'Not satisfied? Get a full refund, no questions asked.'
+        title: '30 Dias de Garantia',
+        description: 'Não ficou satisfeito? Receba seu dinheiro de volta, sem perguntas.'
     },
     {
         icon: 'lock',
-        title: 'Secure payments',
-        description: 'Your data is protected with enterprise-grade security.'
+        title: 'Pagamentos Seguros',
+        description: 'Seus dados são protegidos com segurança de nível empresarial.'
     }
 ]
 

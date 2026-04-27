@@ -16,7 +16,7 @@ export function useNavigation() {
     ]
 
     const supportLinks = [
-        { label: 'FAQ', href: '#' },
+        { label: 'Perguntas Frequentes (FAQ)', href: '#' },
         { label: 'Envios & Devoluções', href: '#' },
         { label: 'Política de Privacidade', href: '#' },
         { label: 'Termos de Serviço', href: '#' }

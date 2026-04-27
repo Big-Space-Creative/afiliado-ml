@@ -17,6 +17,7 @@ const router = express.Router();
  * @description Lista todas as categorias
  * @query {boolean} is_active - Filtra por status ativo (padrão: true)
  * @query {number|null} parent_category_id - Filtra por categoria pai (null para categorias raiz)
+ * @query {boolean} onlyParents - Quando true, retorna apenas categorias raiz
  */
 router.get('/', listCategorias);
 

@@ -8,6 +8,7 @@
 
 import { ref, onMounted, onUnmounted } from 'vue'
 import Lenis from 'lenis'
+import { useScrollStore } from '@/stores/scroll'
 
 /**
  * @typedef {Object} LenisOptions
@@ -35,6 +36,7 @@ export function useLenis(options = {}) {
         touchMultiplier = 2
     } = options
 
+    const scrollStore = useScrollStore()
     const lenis = ref(null)
     let rafId = null
 
@@ -91,15 +93,15 @@ export function useLenis(options = {}) {
             touchMultiplier
         })
 
-        // Expõe globalmente para acesso pelo scroll de navegação (AppHeader)
-        window.__lenis = lenis.value
+        // Registra na store reativa para acesso por AppHeader/AppFooter
+        scrollStore.lenis = lenis.value
 
         // Inicia o loop de animação
         rafId = requestAnimationFrame(raf)
     })
 
     onUnmounted(() => {
-        window.__lenis = null
+        scrollStore.lenis = null
         destroy()
     })
 

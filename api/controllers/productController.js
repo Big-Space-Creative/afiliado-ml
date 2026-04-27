@@ -52,6 +52,10 @@ function parseNumberQuery(value) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+function parseArrayBody(value, fallback = []) {
+  return Array.isArray(value) ? value : fallback;
+}
+
 function parseDateQuery(value, { endOfDay = false } = {}) {
   if (value === undefined || value === null || value === '') return undefined;
 
@@ -468,6 +472,12 @@ export async function createProduto(req, res) {
     const affiliateUrl = req.body.affiliate_url ?? req.body.url_afiliado;
     const rating = req.body.rating ?? req.body.avaliacao;
     const ratingCount = req.body.rating_count ?? req.body.avaliacao_qtd;
+    const images = parseArrayBody(req.body.images);
+    const reviewsData = parseArrayBody(req.body.reviews_data ?? req.body.reviews);
+    const variants = parseArrayBody(req.body.variants);
+    const availability = req.body.availability;
+    const condition = req.body.condition;
+    const priceCurrency = req.body.price_currency;
     const status = normalizeStatus(req.body.status ?? 'active');
     const featured = req.body.featured ?? req.body.destaque ?? false;
     const categoryIds = req.body.category_ids ?? req.body.categoria_ids ?? [];
@@ -530,6 +540,12 @@ export async function createProduto(req, res) {
       affiliate_url: affiliateUrl,
       rating,
       rating_count: ratingCount,
+      images,
+      reviews_data: reviewsData,
+      variants,
+      availability,
+      condition,
+      price_currency: priceCurrency,
       status,
       featured,
     });
@@ -568,6 +584,12 @@ export async function updateProduto(req, res) {
     const affiliateUrl = req.body.affiliate_url ?? req.body.url_afiliado;
     const rating = req.body.rating ?? req.body.avaliacao;
     const ratingCount = req.body.rating_count ?? req.body.avaliacao_qtd;
+    const images = req.body.images;
+    const reviewsData = req.body.reviews_data ?? req.body.reviews;
+    const variants = req.body.variants;
+    const availability = req.body.availability;
+    const condition = req.body.condition;
+    const priceCurrency = req.body.price_currency;
     const normalizedStatus = normalizeStatus(req.body.status);
     const featured = req.body.featured ?? req.body.destaque;
     const categoryIds = req.body.category_ids ?? req.body.categoria_ids;
@@ -598,6 +620,12 @@ export async function updateProduto(req, res) {
       affiliate_url: affiliateUrl ?? produto.affiliate_url,
       rating: rating ?? produto.rating,
       rating_count: ratingCount ?? produto.rating_count,
+      images: Array.isArray(images) ? images : produto.images,
+      reviews_data: Array.isArray(reviewsData) ? reviewsData : produto.reviews_data,
+      variants: Array.isArray(variants) ? variants : produto.variants,
+      availability: availability ?? produto.availability,
+      condition: condition ?? produto.condition,
+      price_currency: priceCurrency ?? produto.price_currency,
       status: normalizedStatus ?? produto.status,
       featured: featured ?? produto.featured,
     });

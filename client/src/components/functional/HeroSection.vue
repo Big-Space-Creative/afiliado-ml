@@ -73,7 +73,7 @@ const handleImageError = (e) => {
 </script>
 
 <template>
-  <section id="hero" ref="heroContainer" class="relative min-h-[85vh] flex items-center bg-white overflow-hidden pt-2 pb-8">
+  <section id="hero" ref="heroContainer" class="relative min-h-[85vh] flex items-center bg-surface overflow-hidden pt-2 pb-8 transition-colors duration-300">
     <!-- Subtle Background Gradient/Blob -->
     <div class="absolute -top-1/5 -left-1/10 w-3/5 h-3/5 rounded-full bg-primary/5 blur-3xl pointer-events-none">
     </div>
@@ -81,7 +81,7 @@ const handleImageError = (e) => {
     </div>
 
     <!-- Decorative Pattern (Subtle Dots) -->
-    <div class="absolute right-0 top-0 w-1/3 h-full opacity-30 pointer-events-none"
+    <div class="absolute right-0 top-0 w-1/3 h-full opacity-30 dark:opacity-10 pointer-events-none"
       style="background-image: radial-gradient(#D1D5DB 1px, transparent 1px); background-size: 24px 24px;"></div>
 
 
@@ -93,41 +93,41 @@ const handleImageError = (e) => {
 
           <!-- Animated Badge -->
           <div
-            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 mb-6 transform translate-y-4 opacity-0">
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-6 transform translate-y-4 opacity-0">
             <span class="relative flex h-2 w-2">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-600 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
             </span>
-            <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Summer Sale 2026</span>
+            <span class="text-xs font-bold text-primary uppercase tracking-wider">Ofertas de Verão 2026</span>
           </div>
 
           <!-- Headline -->
           <h1
-            class="text-4xl md:text-5xl lg:text-7xl font-bold tracking-[-3px] text-gray-950 leading-[0.95] mb-6 transform translate-y-4 opacity-0 max-w-xl">
-            Upgrade your lifestyle today.
+            class="text-4xl md:text-5xl lg:text-7xl font-bold tracking-[-3px] text-text-main leading-[0.95] mb-6 transform translate-y-4 opacity-0 max-w-xl">
+            Melhore seu estilo de vida hoje.
           </h1>
 
           <!-- Description -->
-          <p class="text-base md:text-lg text-gray-500 max-w-lg leading-relaxed mb-8 transform translate-y-4 opacity-0">
-            Curated essentials for the modern creator.
-            Quality that speaks for itself.
+          <p class="text-base md:text-lg text-text-muted max-w-lg leading-relaxed mb-8 transform translate-y-4 opacity-0">
+            Essenciais selecionados para o criador moderno.
+            Qualidade que fala por si mesma.
           </p>
 
           <!-- CTAs -->
           <div
             class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto transform translate-y-4 opacity-0 mb-10">
-            <ClickSparkWrapper sparkColor="#3b82f6" :sparkRadius="50" :sparkCount="12">
+            <ClickSparkWrapper sparkColor="#2563eb" :sparkRadius="50" :sparkCount="12">
               <BaseButton variant="primary" size="lg"
-                class="w-full sm:w-auto font-medium whitespace-nowrap shadow-xl shadow-gray-950/10">
-                Start Shopping
+                class="w-full sm:w-auto font-medium whitespace-nowrap shadow-xl shadow-primary/10">
+                Começar a Comprar
                 <ArrowRight class="w-5 h-5 ml-2" />
               </BaseButton>
             </ClickSparkWrapper>
             <ClickSparkWrapper sparkColor="#6b7280" :sparkRadius="40" :sparkCount="8">
-              <BaseButton variant="secondary" size="lg"
-                class="w-full sm:w-auto border-gray-200 whitespace-nowrap text-gray-950 hover:bg-gray-50">
+              <BaseButton variant="outline" size="lg"
+                class="w-full sm:w-auto whitespace-nowrap">
                 <Play class="w-4 h-4 mr-2 fill-current" />
-                How it works
+                Como funciona
               </BaseButton>
             </ClickSparkWrapper>
           </div>
@@ -136,7 +136,7 @@ const handleImageError = (e) => {
           <div class="flex items-center gap-4 transform translate-y-4 opacity-0">
             <div class="flex -space-x-3">
               <div v-for="i in 4" :key="i"
-                class="w-10 h-10 rounded-full border-[3px] border-white bg-gray-100 overflow-hidden shadow-sm">
+                class="w-10 h-10 rounded-full border-[3px] border-surface bg-surface-hover overflow-hidden shadow-sm">
                 <img :src="`https://i.pravatar.cc/100?img=${i + 25}`" alt="User" class="w-full h-full object-cover">
               </div>
             </div>
@@ -144,8 +144,8 @@ const handleImageError = (e) => {
               <div class="flex text-yellow-500 text-xs mb-0.5 space-x-0.5">
                 <Star v-for="s in 5" :key="s" class="w-4 h-4 fill-current" />
               </div>
-              <p class="text-xs font-medium text-gray-600">
-                <span class="font-bold text-gray-950">{{ shoppersCount.toLocaleString('pt-BR') }}+</span> happy shoppers
+              <p class="text-xs font-medium text-text-muted">
+                <span class="font-bold text-text-main">{{ shoppersCount.toLocaleString('pt-BR') }}+</span> clientes felizes
               </p>
             </div>
           </div>
@@ -158,7 +158,7 @@ const handleImageError = (e) => {
 
           <!-- Back Glow to simulate depth -->
           <div
-            class="absolute inset-0 bg-linear-to-tr from-blue-100/30 to-transparent blur-3xl opacity-60 rounded-full pointer-events-none scale-90">
+            class="absolute inset-0 bg-linear-to-tr from-primary/20 to-transparent blur-3xl opacity-60 dark:opacity-20 rounded-full pointer-events-none scale-90">
           </div>
 
           <!-- Image Container with Rounded Corners -->

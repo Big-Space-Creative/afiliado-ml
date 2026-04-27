@@ -3,14 +3,16 @@ import BaseContainer from '@/components/ui/BaseContainer.vue'
 import { Mail, MapPin } from 'lucide-vue-next'
 import { useNavigation } from '@/composables/useNavigation'
 import { useSocialLinks } from '@/composables/useSocialLinks'
+import { useScrollStore } from '@/stores/scroll'
 
 const currentYear = new Date().getFullYear()
 
 const { navLinks, supportLinks } = useNavigation()
 const { socialLinks } = useSocialLinks()
+const scrollStore = useScrollStore()
 
 /**
- * Scroll suave até a seção (reutiliza Lenis global se disponível)
+ * Scroll suave até a seção (reutiliza Lenis via store se disponível)
  */
 const scrollToSection = (event, sectionId) => {
     if (!sectionId) return
@@ -19,9 +21,8 @@ const scrollToSection = (event, sectionId) => {
     const el = document.getElementById(sectionId)
     if (!el) return
 
-    const lenisInstance = window.__lenis
-    if (lenisInstance) {
-        lenisInstance.scrollTo(el, { offset: -64, duration: 1.2 })
+    if (scrollStore.lenis) {
+        scrollStore.lenis.scrollTo(el, { offset: -64, duration: 1.2 })
     } else {
         el.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
@@ -29,10 +30,10 @@ const scrollToSection = (event, sectionId) => {
 </script>
 
 <template>
-  <footer class="relative bg-gray-950 text-white overflow-hidden">
+  <footer class="relative bg-surface text-text-main overflow-hidden border-t border-border-sutil transition-colors duration-300">
     <!-- Background Pattern -->
-    <div class="absolute inset-0 opacity-5 pointer-events-none"
-      style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 32px 32px;"></div>
+    <div class="absolute inset-0 opacity-5 dark:opacity-10 pointer-events-none"
+      style="background-image: radial-gradient(currentColor 1px, transparent 1px); background-size: 32px 32px;"></div>
 
     <!-- Main Footer Content -->
     <div class="relative z-10 pt-16 md:pt-20 pb-8">
@@ -42,27 +43,27 @@ const scrollToSection = (event, sectionId) => {
           <!-- Brand Column -->
           <div class="lg:col-span-1">
             <!-- Logo -->
-            <a href="/" class="inline-flex items-center gap-2 text-xl font-bold text-white mb-5">
+            <a href="/" class="inline-flex items-center gap-2 text-xl font-bold text-text-main mb-5">
               <svg class="w-9 h-9" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="32" height="32" rx="8" fill="#fff" />
+                <rect width="32" height="32" rx="8" class="fill-neutral-950 dark:fill-primary" />
                 <path d="M8 16L16 8L24 16L16 24L8 16Z" fill="#F9D52C" />
               </svg>
               <span>Afiliado</span>
             </a>
 
             <!-- Description -->
-            <p class="text-sm text-gray-400 leading-relaxed mb-6 max-w-xs">
-              Curated essentials for the modern lifestyle. Premium quality products delivered with care.
+            <p class="text-sm text-text-muted leading-relaxed mb-6 max-w-xs">
+              Essenciais selecionados para o estilo de vida moderno. Produtos de qualidade premium entregues com cuidado.
             </p>
 
             <!-- Contact Info -->
             <div class="space-y-3">
-              <a href="mailto:hello@afiliado.com"
-                class="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors">
+              <a href="mailto:contato@afiliado.com"
+                class="flex items-center gap-2 text-sm text-text-muted hover:text-text-main transition-colors">
                 <Mail class="w-4 h-4" />
-                hello@afiliado.com
+                contato@afiliado.com
               </a>
-              <div class="flex items-center gap-2 text-sm text-gray-400">
+              <div class="flex items-center gap-2 text-sm text-text-muted">
                 <MapPin class="w-4 h-4" />
                 São Paulo, Brasil
               </div>
@@ -71,14 +72,14 @@ const scrollToSection = (event, sectionId) => {
 
           <!-- Navigation Column -->
           <div>
-            <h4 class="text-sm font-semibold text-white uppercase tracking-wider mb-5">
-              Navigation
+            <h4 class="text-sm font-semibold text-text-main uppercase tracking-wider mb-5">
+              Navegação
             </h4>
             <ul class="space-y-3">
               <li v-for="link in navLinks" :key="link.sectionId">
                 <a :href="link.href" @click="scrollToSection($event, link.sectionId)"
-                  class="text-sm text-gray-400 hover:text-white transition-colors inline-flex items-center gap-1 group">
-                  <span class="w-0 h-px bg-blue-500 transition-all group-hover:w-4"></span>
+                  class="text-sm text-text-muted hover:text-text-main transition-colors inline-flex items-center gap-1 group">
+                  <span class="w-0 h-px bg-primary transition-all group-hover:w-4"></span>
                   {{ link.label }}
                 </a>
               </li>
@@ -87,14 +88,14 @@ const scrollToSection = (event, sectionId) => {
 
           <!-- Support Column -->
           <div>
-            <h4 class="text-sm font-semibold text-white uppercase tracking-wider mb-5">
-              Support
+            <h4 class="text-sm font-semibold text-text-main uppercase tracking-wider mb-5">
+              Suporte
             </h4>
             <ul class="space-y-3">
               <li v-for="link in supportLinks" :key="link.label">
                 <a :href="link.href"
-                  class="text-sm text-gray-400 hover:text-white transition-colors inline-flex items-center gap-1 group">
-                  <span class="w-0 h-px bg-blue-500 transition-all group-hover:w-4"></span>
+                  class="text-sm text-text-muted hover:text-text-main transition-colors inline-flex items-center gap-1 group">
+                  <span class="w-0 h-px bg-primary transition-all group-hover:w-4"></span>
                   {{ link.label }}
                 </a>
               </li>
@@ -103,20 +104,20 @@ const scrollToSection = (event, sectionId) => {
 
           <!-- Newsletter Column -->
           <div>
-            <h4 class="text-sm font-semibold text-white uppercase tracking-wider mb-5">
-              Stay Updated
+            <h4 class="text-sm font-semibold text-text-main uppercase tracking-wider mb-5">
+              Fique Atualizado
             </h4>
-            <p class="text-sm text-gray-400 mb-4">
-              Subscribe to get special offers and updates.
+            <p class="text-sm text-text-muted mb-4">
+              Inscreva-se para receber ofertas especiais e atualizações.
             </p>
 
             <!-- Newsletter Form -->
             <form @submit.prevent class="flex gap-2 mb-6">
-              <input type="email" placeholder="Your email"
-                class="flex-1 px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" />
+              <input type="email" placeholder="Seu e-mail"
+                class="flex-1 px-4 py-2.5 bg-surface-hover border border-border-sutil rounded-xl text-sm text-text-main placeholder-text-muted/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" />
               <button type="submit"
-                class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-xl transition-colors shrink-0">
-                Subscribe
+                class="px-4 py-2.5 bg-primary hover:bg-primary-dark text-white text-sm font-medium rounded-xl transition-colors shrink-0 shadow-lg shadow-primary/20">
+                Inscrever-se
               </button>
             </form>
 
@@ -124,7 +125,7 @@ const scrollToSection = (event, sectionId) => {
             <div class="flex gap-3">
               <a v-for="social in socialLinks" :key="social.name" :href="social.href" target="_blank"
                 rel="noopener noreferrer" :aria-label="social.name"
-                class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-gray-400 hover:bg-blue-600 hover:border-blue-600 hover:text-white transition-all duration-300">
+                class="w-10 h-10 flex items-center justify-center rounded-xl bg-surface-hover border border-border-sutil text-text-muted hover:bg-primary hover:border-primary hover:text-white transition-all duration-300 shadow-sm hover:shadow-primary/20">
                 <!-- Instagram -->
                 <svg v-if="social.icon === 'instagram'" class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path
@@ -153,25 +154,25 @@ const scrollToSection = (event, sectionId) => {
         <!-- Bottom Bar -->
         <div class="pt-8 border-t border-white/10">
           <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p class="text-sm text-gray-500">
-              © {{ currentYear }} Afiliado ML. All rights reserved.
+            <p class="text-sm text-neutral-500">
+              © {{ currentYear }} Afiliado ML. Todos os direitos reservados.
             </p>
 
             <!-- Payment Methods -->
             <div class="flex items-center gap-3">
-              <span class="text-xs text-gray-500 mr-2">We accept:</span>
+              <span class="text-xs text-neutral-500 mr-2">Aceitamos:</span>
               <div class="flex gap-2">
                 <!-- Visa -->
                 <div class="w-10 h-6 bg-white/10 rounded flex items-center justify-center">
-                  <span class="text-[10px] font-bold text-gray-400">VISA</span>
+                  <span class="text-[10px] font-bold text-neutral-400">VISA</span>
                 </div>
                 <!-- Mastercard -->
                 <div class="w-10 h-6 bg-white/10 rounded flex items-center justify-center">
-                  <span class="text-[10px] font-bold text-gray-400">MC</span>
+                  <span class="text-[10px] font-bold text-neutral-400">MC</span>
                 </div>
                 <!-- PIX -->
                 <div class="w-10 h-6 bg-white/10 rounded flex items-center justify-center">
-                  <span class="text-[10px] font-bold text-gray-400">PIX</span>
+                  <span class="text-[10px] font-bold text-neutral-400">PIX</span>
                 </div>
               </div>
             </div>

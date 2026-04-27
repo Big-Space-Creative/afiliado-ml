@@ -24,6 +24,5 @@ router.use("/users", usuariosRoutes);
 router.use("/usuarios", usuariosRoutes);
 router.use("/prices", precosRoutes);
 router.use("/precos", precosRoutes);
-router.use("/dashboard", dashboardRoutes);
 
 export default router;

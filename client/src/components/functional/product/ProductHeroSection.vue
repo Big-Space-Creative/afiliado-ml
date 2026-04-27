@@ -92,9 +92,9 @@ const starDistribution = computed(() => getStarDistribution(props.product?.rate)
 </script>
 
 <template>
-  <section ref="heroContainer" class="relative bg-white overflow-hidden py-8 md:py-12">
+  <section ref="heroContainer" class="relative bg-surface overflow-hidden py-8 md:py-12 transition-colors duration-300">
     <!-- Background Blobs Premium -->
-    <div class="absolute -top-1/5 -left-1/10 w-3/5 h-3/5 rounded-full bg-blue-50/30 blur-3xl pointer-events-none">
+    <div class="absolute -top-1/5 -left-1/10 w-3/5 h-3/5 rounded-full bg-primary/5 blur-3xl pointer-events-none">
     </div>
     <div class="absolute -bottom-1/4 -right-1/10 w-1/2 h-1/2 rounded-full bg-primary/5 blur-3xl pointer-events-none">
     </div>
@@ -112,12 +112,12 @@ const starDistribution = computed(() => getStarDistribution(props.product?.rate)
         <div ref="gallerySection" class="space-y-4 perspective-container">
           <!-- Main Image Container -->
           <div class="relative" :style="parallaxStyle">
-            <div class="aspect-square bg-white rounded-3xl overflow-hidden relative shadow-lg border border-gray-100">
+            <div class="aspect-square bg-surface-hover rounded-3xl overflow-hidden relative shadow-lg border border-border-sutil">
               <!-- Main Image -->
               <img v-if="productImage" :src="productImage" :alt="product.title" @error="handleImageError"
                 class="w-full h-full object-cover object-center" />
               <!-- Placeholder -->
-              <div v-else class="w-full h-full flex items-center justify-center text-gray-300">
+              <div v-else class="w-full h-full flex items-center justify-center text-text-muted/30">
                 <svg class="w-24 h-24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
                     d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -133,15 +133,15 @@ const starDistribution = computed(() => getStarDistribution(props.product?.rate)
           <!-- Brand & Seller Badge -->
           <div class="flex items-center gap-3 mb-4">
             <span
-              class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold">
+              class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold">
               <BadgeCheck class="w-3.5 h-3.5" />
               Vendedor Verificado
             </span>
-            <span class="text-xs text-gray-400 font-medium">{{ product.id }}</span>
+            <span class="text-xs text-text-muted font-medium">{{ product.id }}</span>
           </div>
 
           <!-- Title -->
-          <h1 class="text-xl md:text-2xl lg:text-3xl font-bold text-gray-950 mb-3 leading-tight">
+          <h1 class="text-xl md:text-2xl lg:text-3xl font-bold text-text-main mb-3 leading-tight">
             {{ product.title }}
           </h1>
 
@@ -155,31 +155,31 @@ const starDistribution = computed(() => getStarDistribution(props.product?.rate)
                 <StarHalf v-if="starDistribution.hasHalfStar" class="w-4 h-4 fill-current" />
                 <!-- Estrelas vazias -->
                 <Star v-for="i in starDistribution.emptyStars" :key="'empty-' + i"
-                  class="w-4 h-4 text-gray-200" />
+                  class="w-4 h-4 text-border-main" />
               </div>
-              <span class="text-sm font-bold text-gray-950 ml-1">{{ product.rate }}</span>
+              <span class="text-sm font-bold text-text-main ml-1">{{ product.rate }}</span>
             </div>
-            <span class="text-gray-300">|</span>
-            <span class="text-sm text-gray-500">{{ product.rateCount }} avaliações</span>
+            <span class="text-border-main">|</span>
+            <span class="text-sm text-text-muted">{{ product.rateCount }} avaliações</span>
           </div>
 
           <!-- Price Card -->
-          <div class="bg-linear-to-br from-gray-50 to-white rounded-2xl p-5 border border-gray-100 mb-6">
+          <div class="bg-linear-to-br from-surface-hover to-surface rounded-2xl p-5 border border-border-sutil mb-6">
             <div class="flex items-end gap-3 mb-2">
-              <span class="text-4xl font-extrabold text-gray-950">{{ formatPrice(product.price)
+              <span class="text-4xl font-extrabold text-text-main">{{ formatPrice(product.price)
               }}</span>
             </div>
             <div class="flex items-center gap-2">
-              <span class="text-sm text-gray-500">
-                em até <span class="font-semibold text-gray-700">12x sem juros</span>
+              <span class="text-sm text-text-muted">
+                em até <span class="font-semibold text-text-main">12x sem juros</span>
               </span>
             </div>
           </div>
 
           <!-- Description -->
           <div class="mb-6">
-            <h3 class="text-sm font-bold text-gray-950 uppercase tracking-wide mb-3">Descrição</h3>
-            <p class="text-gray-600 leading-relaxed text-sm md:text-base">
+            <h3 class="text-sm font-bold text-text-main uppercase tracking-wide mb-3">Descrição</h3>
+            <p class="text-text-muted leading-relaxed text-sm md:text-base">
               {{ product.description }}
             </p>
           </div>
@@ -195,13 +195,13 @@ const starDistribution = computed(() => getStarDistribution(props.product?.rate)
             </BaseButton>
 
             <!-- Redirect Notice -->
-            <p class="text-center text-xs text-gray-400 leading-relaxed">
+            <p class="text-center text-xs text-text-muted leading-relaxed">
               Ao clicar em "Comprar Agora", você será redirecionado para o
-              <span class="font-semibold text-gray-500">Mercado Livre</span> para finalizar sua compra com segurança.
+              <span class="font-semibold text-text-main/80">Mercado Livre</span> para finalizar sua compra com segurança.
             </p>
 
             <!-- Trust Badges -->
-            <div class="flex items-center justify-center gap-4 text-xs text-gray-400 pt-2">
+            <div class="flex items-center justify-center gap-4 text-xs text-text-muted pt-2">
               <span class="flex items-center gap-1">
                 <Lock class="w-3.5 h-3.5" />
                 Compra Segura
