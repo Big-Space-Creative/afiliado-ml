@@ -559,11 +559,11 @@ onUnmounted(() => {
       </div>
 
       <div class="overflow-x-auto">
-        <table class="w-full min-w-[860px]">
+        <table class="w-full min-w-[860px] table-fixed">
           <thead class="bg-gray-50 dark:bg-neutral-800 border-b border-gray-100 dark:border-neutral-700">
             <tr>
               <th
-                class="text-left text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider px-4 py-3"
+                class="w-[36%] text-left text-xs font-semibold text-gray-500 dark:text-neutral-400 uppercase tracking-wider px-4 py-3"
               >
                 Produto
               </th>
@@ -625,7 +625,7 @@ onUnmounted(() => {
               :key="product.id"
               class="border-t border-gray-100 dark:border-neutral-800 hover:bg-gray-50/70 dark:hover:bg-neutral-800/60 transition-colors"
             >
-              <td class="px-4 py-3.5">
+              <td class="w-[36%] max-w-0 px-4 py-3.5">
                 <div class="flex items-center gap-3">
                   <div
                     class="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 shrink-0"
@@ -637,14 +637,20 @@ onUnmounted(() => {
                       class="w-full h-full object-cover"
                     />
                   </div>
-                  <div class="min-w-0">
-                    <p class="text-sm font-semibold text-gray-950 dark:text-neutral-100 truncate">{{ product.title }}</p>
-                    <p class="text-xs text-gray-500 dark:text-neutral-400 truncate">ML: {{ product.meli_id || '-' }}</p>
+                  <div class="min-w-0 flex-1">
+                    <p class="text-sm font-semibold text-gray-950 dark:text-neutral-100 truncate" :title="product.title">
+                      {{ product.title }}
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-neutral-400 truncate" :title="product.meli_id || '-'">
+                      ML: {{ product.meli_id || '-' }}
+                    </p>
                   </div>
                 </div>
               </td>
               <td class="px-4 py-3.5 text-sm text-gray-700 dark:text-neutral-300">
-                {{ product.categories?.[0]?.name || 'Sem categoria' }}
+                <p class="truncate" :title="product.categories?.[0]?.name || 'Sem categoria'">
+                  {{ product.categories?.[0]?.name || 'Sem categoria' }}
+                </p>
               </td>
               <td class="px-4 py-3.5 text-right text-sm font-semibold text-gray-900 dark:text-neutral-100">
                 {{ formatCurrency(product.price) }}

@@ -51,9 +51,9 @@ const menuItems = [
   { id: 'products', label: 'Visualizar Produtos', icon: Package, to: '/admin/produtos' },
   {
     id: 'categories',
-    label: 'Cadastro de Categorias',
+    label: 'Categorias',
     icon: Tag,
-    to: '/admin/categorias/cadastrar',
+    to: '/admin/categorias',
   },
 ]
 
@@ -169,7 +169,7 @@ function toggleDarkMode() {
       </button>
     </nav>
 
-    <div class="mt-auto px-4 py-4 border-t border-gray-200 dark:border-neutral-800 relative">
+    <div class="mt-auto px-4 py-4 relative">
       <div
         :class="[
           'w-full flex items-center gap-3 px-2 py-2 whitespace-nowrap',

@@ -1,4 +1,4 @@
-import { Categoria } from '../models/index.js';
+import { Categoria, Produto } from '../models/index.js';
 import { Sequelize } from 'sequelize';
 
 /**
@@ -148,6 +148,7 @@ function buildCategoryTree(categories) {
 export async function listCategorias(req, res) {
   try {
     const activeFilter = parseBooleanQuery(req.query.is_active ?? req.query.ativo);
+    const onlyParentsFilter = parseBooleanQuery(req.query.onlyParents ?? req.query.only_parents);
     const parentCategoryFilter = parseNullableInt(
       req.query.parent_category_id ?? req.query.categoria_pai_id ?? req.query.pai
     );
@@ -158,12 +159,25 @@ export async function listCategorias(req, res) {
       where.is_active = activeFilter;
     }
 
-    if (parentCategoryFilter !== undefined) {
+    if (onlyParentsFilter === true) {
+      where.parent_category_id = null;
+    } else if (parentCategoryFilter !== undefined) {
       where.parent_category_id = parentCategoryFilter;
     }
 
     const categorias = await Categoria.findAll({
       where,
+      attributes: {
+        include: [
+          [
+            Sequelize.cast(
+              Sequelize.fn('COUNT', Sequelize.fn('DISTINCT', Sequelize.col('products.id'))),
+              'INTEGER'
+            ),
+            'product_count',
+          ],
+        ],
+      },
       include: [
         {
           model: Categoria,
@@ -172,7 +186,15 @@ export async function listCategorias(req, res) {
           required: false,
           attributes: ['id', 'name', 'slug'],
         },
+        {
+          model: Produto,
+          as: 'products',
+          required: false,
+          attributes: [],
+          through: { attributes: [] },
+        },
       ],
+      group: ['Categoria.id', 'subcategories.id'],
       order: [['name', 'ASC']],
     });
 

@@ -42,7 +42,8 @@ export function useTiltCard(options = {}) {
         transform: `perspective(${perspective}px) rotateX(${rotateX.value}deg) rotateY(${rotateY.value}deg) scale(${scale.value})`,
         transition: isHovering.value ? 'none' : `transform ${transitionDuration}s ease-out`,
         transformStyle: 'preserve-3d',
-        willChange: 'transform'
+        // Promove para layer GPU apenas durante hover — evita GPU memory overhead permanente
+        willChange: isHovering.value ? 'transform' : 'auto'
     }))
 
     // Estilo do efeito glare (opcional)

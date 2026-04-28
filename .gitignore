@@ -20,3 +20,6 @@ Desktop.ini
 # IDE
 .vscode/
 .idea/
+
+# Local API config
+api/config/config.json

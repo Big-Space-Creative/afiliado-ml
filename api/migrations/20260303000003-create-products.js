@@ -32,6 +32,11 @@ export const up = async (queryInterface, Sequelize) => {
       type: Sequelize.TEXT,
       allowNull: true,
     },
+    images: {
+      type: Sequelize.JSONB,
+      allowNull: false,
+      defaultValue: [],
+    },
     product_url: {
       type: Sequelize.TEXT,
       allowNull: false,
@@ -46,6 +51,28 @@ export const up = async (queryInterface, Sequelize) => {
     },
     rating_count: {
       type: Sequelize.INTEGER,
+      allowNull: true,
+    },
+    reviews_data: {
+      type: Sequelize.JSONB,
+      allowNull: false,
+      defaultValue: [],
+    },
+    variants: {
+      type: Sequelize.JSONB,
+      allowNull: false,
+      defaultValue: [],
+    },
+    availability: {
+      type: Sequelize.TEXT,
+      allowNull: true,
+    },
+    condition: {
+      type: Sequelize.TEXT,
+      allowNull: true,
+    },
+    price_currency: {
+      type: Sequelize.TEXT,
       allowNull: true,
     },
     status: {

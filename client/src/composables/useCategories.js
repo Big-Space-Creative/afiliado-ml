@@ -1,46 +1,52 @@
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import http from '@/services/http'
 
-export function useCategories() {
-  const categories = ref([
-    {
-      id: 1,
-      name: 'Smartphones & Tablets',
-      count: '120+ Produtos',
-      desc: 'Os ultimos lancamentos em tecnologia movel, com as melhores cameras e desempenho absurdo para o seu dia a dia.'
-    },
-    {
-      id: 2,
-      name: 'Notebooks',
-      count: '85+ Produtos',
-      desc: 'Maquinas de alta performance.'
-    },
-    {
-      id: 3,
-      name: 'TVs & Audio',
-      count: '64+ Produtos',
-      desc: 'Cinema imersivo em casa.'
-    },
-    {
-      id: 4,
-      name: 'Gaming',
-      count: '52+ Produtos',
-      desc: 'Consoles, acessorios e perifericos para elevar seu setup.'
-    },
-    {
-      id: 5,
-      name: 'Casa Inteligente',
-      count: '41+ Produtos',
-      desc: 'Automacao residencial com praticidade, seguranca e controle total.'
-    },
-    {
-      id: 6,
-      name: 'Wearables',
-      count: '33+ Produtos',
-      desc: 'Relogios e pulseiras inteligentes para saude, treino e produtividade.'
+export function useCategories(options = {}) {
+  const { onlyParents = false } = options
+  const categories = ref([])
+  const isLoading = ref(false)
+  const error = ref(null)
+
+  const fetchCategories = async () => {
+    isLoading.value = true
+    error.value = null
+    try {
+      const params = {}
+      if (onlyParents) {
+        params.onlyParents = true
+      }
+
+      const { data } = await http.get('/categorias', { params })
+      
+      // Mapeia os dados da API para o formato esperado pela UI
+      categories.value = (data?.data || []).map(cat => ({
+        id: cat.id,
+        name: cat.name,
+        slug: cat.slug,
+        // Fallback para descrição se não houver no banco ainda
+        desc: cat.description || `Confira nossa seleção exclusiva de produtos para ${cat.name}.`,
+        // Cálculo de contagem (a API deve retornar product_count ou similar futuramente)
+        count: `${cat.product_count || 0} Produtos`
+      }))
+    } catch (err) {
+      console.error('Erro ao buscar categorias:', err)
+      error.value = 'Não foi possível carregar as categorias.'
+    } finally {
+      isLoading.value = false
     }
-  ])
+  }
+
+  // Busca automática se não for controlado manualmente
+  onMounted(() => {
+    if (categories.value.length === 0) {
+      fetchCategories()
+    }
+  })
 
   return {
-    categories
+    categories,
+    isLoading,
+    error,
+    fetchCategories
   }
 }

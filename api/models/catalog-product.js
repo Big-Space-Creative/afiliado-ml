@@ -49,6 +49,11 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: true,
       },
+      images: {
+        type: DataTypes.JSONB,
+        allowNull: false,
+        defaultValue: [],
+      },
       product_url: {
         type: DataTypes.TEXT,
         allowNull: false,
@@ -63,6 +68,28 @@ export default (sequelize, DataTypes) => {
       },
       rating_count: {
         type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      reviews_data: {
+        type: DataTypes.JSONB,
+        allowNull: false,
+        defaultValue: [],
+      },
+      variants: {
+        type: DataTypes.JSONB,
+        allowNull: false,
+        defaultValue: [],
+      },
+      availability: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      condition: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
+      price_currency: {
+        type: DataTypes.TEXT,
         allowNull: true,
       },
       status: {

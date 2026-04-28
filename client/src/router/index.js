@@ -25,14 +25,14 @@ const router = createRouter({
       component: () => import('../views/ProductDetailsView.vue'),
     },
     {
+      path: '/produtos',
+      name: 'CatalogView',
+      component: () => import('../views/TopClickedProductsView.vue'),
+    },
+    {
       path: '/categorias',
       name: 'CategoriesView',
       component: () => import('../views/CategoriesView.vue'),
-    },
-    {
-      path: '/produtos/mais-clicados',
-      name: 'TopClickedProductsView',
-      component: () => import('../views/TopClickedProductsView.vue'),
     },
     {
       path: '/admin/login',
@@ -59,9 +59,27 @@ const router = createRouter({
       meta: { hideLayout: true },
     },
     {
+      path: '/admin/produtos/editar/:id',
+      name: 'AdminProductEdit',
+      component: () => import('../views/AdminProductEditView.vue'),
+      meta: { hideLayout: true },
+    },
+    {
+      path: '/admin/categorias',
+      name: 'AdminCategories',
+      component: () => import('../views/AdminCategoriesView.vue'),
+      meta: { hideLayout: true },
+    },
+    {
       path: '/admin/categorias/cadastrar',
       name: 'AdminCategoryCreate',
       component: () => import('../views/AdminCategoryCreateView.vue'),
+      meta: { hideLayout: true },
+    },
+    {
+      path: '/admin/categorias/editar/:id',
+      name: 'AdminCategoryEdit',
+      component: () => import('../views/AdminCategoryEditView.vue'),
       meta: { hideLayout: true },
     },
     {

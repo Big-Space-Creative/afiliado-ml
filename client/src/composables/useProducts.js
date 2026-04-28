@@ -1,83 +1,60 @@
 /**
  * useProducts - Composable para dados e lógica de produtos
- * Usado em: ProductsSection
+ * Usado em: ProductsSection, ProductDetails, TopClickedProducts
  */
 
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import http from '@/services/http'
 
-// Dados de produtos - em produção viriam de uma API
-const products = ref([
-    {
-        id: 1,
-        name: 'Premium Wireless Headphones',
-        price: 149,
-        originalPrice: 199,
-        variant: 'Audio',
-        image: null,
-        badge: 'Best Seller',
-        rating: 4.8,
-        reviewCount: 234,
-        clickCount: 1241
-    },
-    {
-        id: 2,
-        name: 'Smart Fitness Watch Pro',
-        price: 299,
-        variant: 'Wearables',
-        image: null,
-        badge: 'New',
-        rating: 4.9,
-        reviewCount: 89,
-        clickCount: 980
-    },
-    {
-        id: 3,
-        name: 'Leather Messenger Bag',
-        price: 189,
-        originalPrice: 249,
-        variant: 'Accessories',
-        image: null,
-        badge: 'Sale',
-        rating: 4.7,
-        reviewCount: 156,
-        clickCount: 845
-    },
-    {
-        id: 4,
-        name: 'Minimalist Desk Lamp',
-        price: 79,
-        variant: 'Home Office',
-        image: null,
-        rating: 4.6,
-        reviewCount: 98,
-        clickCount: 533
-    },
-    {
-        id: 5,
-        name: 'Portable Power Station',
-        price: 399,
-        variant: 'Tech',
-        image: null,
-        badge: 'New',
-        rating: 4.9,
-        reviewCount: 45,
-        clickCount: 1268
-    },
-    {
-        id: 6,
-        name: 'Ergonomic Keyboard',
-        price: 129,
-        variant: 'Peripherals',
-        image: null,
-        rating: 4.5,
-        reviewCount: 312,
-        clickCount: 1120
+export function useProducts(options = {}) {
+    const { featured = false, limit = null } = options
+    const products = ref([])
+    const isLoading = ref(false)
+    const error = ref(null)
+
+    const fetchProducts = async () => {
+        isLoading.value = true
+        error.value = null
+        try {
+            // Escolhe o endpoint baseado na necessidade
+            const url = featured ? '/produtos/destaque' : '/produtos'
+            const params = {}
+            if (limit) params.limit = limit
+
+            const { data } = await http.get(url, { params })
+            
+            // Mapeia os dados da API (snake_case) para o formato esperado pela UI (camelCase)
+            products.value = (data?.data || []).map(p => ({
+                id: p.id,
+                name: p.title,
+                price: Number(p.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 }),
+                originalPrice: p.original_price ? Number(p.original_price).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : null,
+                image: p.image_url,
+                variant: p.categories?.[0]?.name || 'Geral',
+                rating: Number(p.rating || 0),
+                reviewCount: p.rating_count || 0,
+                clickCount: p.click_count || 0
+            }))
+        } catch (err) {
+            console.error('Erro ao buscar produtos:', err)
+            error.value = 'Não foi possível carregar os produtos.'
+        } finally {
+            isLoading.value = false
+        }
     }
-])
 
-export function useProducts() {
+    onMounted(() => {
+        // Só busca automaticamente se o array estiver vazio
+        if (products.value.length === 0) {
+            fetchProducts()
+        }
+    })
+
     return {
-        products
+        products,
+        isLoading,
+        error,
+        fetchProducts
     }
 }
 

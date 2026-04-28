@@ -7,12 +7,12 @@
 
 @theme {
   /* Cores do Design (Figma) */
-  --color-gray-950: #0f1113;
-  --color-gray-800: #313f49;
-  --color-gray-400: #aeb7be;
-  --color-gray-200: #dadde2;
-  --color-gray-100: #eaedee;
-  --color-gray-50: #f4f6f8;
+  --color-neutral-950: #0a0a0a;
+  --color-neutral-800: #262626;
+  --color-neutral-400: #a3a3a3;
+  --color-neutral-200: #e5e5e5;
+  --color-neutral-100: #f5f5f5;
+  --color-neutral-50: #fafafa;
 
   /* Cores de Ação */
   --color-primary: #2563eb;
@@ -23,6 +23,28 @@
 
   /* Font Family */
   --font-sans: 'DM Sans', system-ui, sans-serif;
+
+  /* Semantic Theme Variables */
+  --color-surface: #ffffff;
+  --color-surface-hover: var(--color-neutral-50);
+  --color-text-main: var(--color-neutral-950);
+  --color-text-muted: var(--color-neutral-800);
+  --color-border-sutil: var(--color-neutral-100);
+  --color-border-main: var(--color-neutral-200);
+  /* primary usada como COR DE TEXTO sobre superfície (light: 4.5:1+, dark: via override) */
+  --color-primary-text: #2563eb;
+}
+
+.dark {
+  --color-surface: #0a0a0a; /* neutral-950 */
+  --color-surface-hover: #171717; /* neutral-900 */
+  --color-text-main: #fafafa; /* neutral-50 */
+  --color-text-muted: #a3a3a3; /* neutral-400 */
+  --color-border-sutil: #262626; /* neutral-800 */
+  --color-border-main: #404040; /* neutral-700 */
+  /* Re-alinhando variáveis de ação para consistência WCAG */
+  --color-primary: #60a5fa; /* blue-400 */
+  --color-primary-text: #93c5fd; /* blue-300 */
 }
 
 /* ===========================
@@ -31,15 +53,11 @@
 
 body {
   font-family: var(--font-sans);
-  background-color: #ffffff;
-  color: var(--color-gray-950);
+  background-color: var(--color-surface);
+  color: var(--color-text-main);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-.dark body {
-  background-color: #0a0a0a;
-  color: #f5f5f5;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Inputs globais acompanhando tema */
@@ -61,9 +79,9 @@ body {
     select,
     textarea
   ) {
-  background-color: rgb(38 38 38);
-  border-color: rgb(82 82 82);
-  color: rgb(245 245 245);
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-border-main);
+  color: var(--color-text-main);
 }
 
 .dark
@@ -72,7 +90,7 @@ body {
     select,
     textarea
   )::placeholder {
-  color: rgb(163 163 163);
+  color: var(--color-text-muted);
 }
 
 .dark
@@ -107,7 +125,7 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-gray-100);
+  background: var(--color-neutral-100);
   border-radius: 10px;
 }
 
@@ -116,10 +134,9 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--color-gray-400), var(--color-gray-800));
+  background: linear-gradient(180deg, var(--color-neutral-400), var(--color-neutral-800));
   border-radius: 10px;
-  border: 2px solid var(--color-gray-100);
-  transition: background 0.3s ease;
+  border: 2px solid var(--color-neutral-100);
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -132,13 +149,13 @@ html {
 }
 
 ::-webkit-scrollbar-corner {
-  background: var(--color-gray-100);
+  background: var(--color-neutral-100);
 }
 
 /* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-gray-400) var(--color-gray-100);
+  scrollbar-color: var(--color-neutral-400) var(--color-neutral-100);
 }
 
 .dark * {

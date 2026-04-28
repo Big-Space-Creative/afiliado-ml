@@ -7,6 +7,25 @@ const USER_KEY = 'usuario'
 const LEGACY_TOKEN_KEY = 'auth_token'
 const LEGACY_USER_KEY = 'auth_user'
 
+function getLoginErrorMessage(error) {
+  if (!error?.response) {
+    return 'Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente.'
+  }
+
+  const status = error.response.status
+  const apiMessage = error.response.data?.message || error.response.data?.error
+
+  if (status === 401 || status === 403) {
+    return 'Email ou senha inválidos.'
+  }
+
+  if (status >= 500) {
+    return 'Serviço temporariamente indisponível. Tente novamente em instantes.'
+  }
+
+  return apiMessage || 'Não foi possível realizar login. Revise os dados e tente novamente.'
+}
+
 export const useAuthStore = defineStore('auth', () => {
   const token = ref(localStorage.getItem(TOKEN_KEY) || localStorage.getItem(LEGACY_TOKEN_KEY) || '')
   const user = ref(null)
@@ -63,6 +82,10 @@ export const useAuthStore = defineStore('auth', () => {
         email: payload?.email,
       })
       return payload
+    } catch (error) {
+      const friendlyError = new Error(getLoginErrorMessage(error))
+      friendlyError.cause = error
+      throw friendlyError
     } finally {
       isLoading.value = false
     }
