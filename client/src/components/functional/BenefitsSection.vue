@@ -1,101 +1,142 @@
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 import BaseContainer from '@/components/ui/BaseContainer.vue'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useBenefits } from '@/composables/useBenefits'
+import { useTiltCard } from '@/composables/useTiltCard'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const benefits = [
-    {
-        icon: 'truck',
-        title: 'Free shipping & returns',
-        description: 'Lorem ipsum dolor sit amet, consect adipiscing elit.'
-    },
-    {
-        icon: 'star',
-        title: 'Customers rate us 4.8',
-        description: 'Lorem ipsum dolor sit amet, consect adipiscing elit.'
-    },
-    {
-        icon: 'shield',
-        title: '30 Day money back',
-        description: 'Lorem ipsum dolor sit amet, consect adipiscing elit.'
-    },
-    {
-        icon: 'lock',
-        title: 'Secure payments',
-        description: 'Lorem ipsum dolor sit amet, consect adipiscing elit.'
-    }
-]
+const { benefits, iconComponents } = useBenefits()
+
+// Criar instâncias de tilt para cada card
+const tiltCards = benefits.map(() => useTiltCard({
+  rotateAmplitude: 10,
+  scaleOnHover: 1.03,
+  transitionDuration: 0.3
+}))
+
+let entranceTween = null
 
 onMounted(() => {
-    gsap.from('.benefit-card', {
-        scrollTrigger: {
-            trigger: '.benefits-grid',
-            start: 'top 80%',
-        },
-        y: 40,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.15,
-        ease: 'power2.out'
-    })
+  // Garante que os cards estejam visíveis inicialmente
+  gsap.set('.benefit-card', { autoAlpha: 1, y: 0, filter: 'blur(0px)' })
+
+  entranceTween = gsap.from('.benefit-card', {
+    scrollTrigger: {
+      trigger: '.benefits-grid',
+      start: 'top 85%',
+      once: true
+    },
+    y: 40,
+    autoAlpha: 0,
+    filter: 'blur(6px)',
+    duration: 0.8,
+    stagger: 0.12,
+    ease: 'power3.out'
+  })
+})
+
+onUnmounted(() => {
+  entranceTween?.kill()
 })
 </script>
 
 <template>
-    <section class="py-16 md:py-24 bg-white">
-        <BaseContainer>
-            <h2 class="text-2xl md:text-3xl font-bold text-[#0F1113] text-center mb-16 tracking-tight">
-                Benefits of shopping with us
-            </h2>
+  <section id="benefits" class="relative py-20 md:py-28 bg-surface overflow-hidden transition-colors duration-300">
+    <!-- Subtle Background Elements -->
+    <div class="absolute -top-1/4 -right-1/4 w-1/2 h-1/2 rounded-full bg-primary/5 blur-3xl pointer-events-none">
+    </div>
+    <div class="absolute -bottom-1/4 -left-1/4 w-1/3 h-1/3 rounded-full bg-surface-hover/50 blur-3xl pointer-events-none">
+    </div>
 
-            <!-- Figma-aligned Grid: 4 columns, centered content -->
-            <div class="benefits-grid grid grid-cols-2 lg:grid-cols-4 gap-y-12 gap-x-8">
-                <div v-for="benefit in benefits" :key="benefit.title"
-                    class="benefit-card flex flex-col items-center text-center group">
-                    <!-- Icon Circle -->
-                    <div
-                        class="w-16 h-16 mb-6 flex items-center justify-center rounded-full border-[3px] border-[#0F1113] group-hover:bg-[#0F1113] transition-colors duration-300">
-                        <!-- Truck -->
-                        <svg v-if="benefit.icon === 'truck'"
-                            class="w-7 h-7 text-[#0F1113] group-hover:text-white transition-colors" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
-                        </svg>
-                        <!-- Star -->
-                        <svg v-else-if="benefit.icon === 'star'"
-                            class="w-7 h-7 text-[#0F1113] group-hover:text-white transition-colors" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                        </svg>
-                        <!-- Shield -->
-                        <svg v-else-if="benefit.icon === 'shield'"
-                            class="w-7 h-7 text-[#0F1113] group-hover:text-white transition-colors" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                        </svg>
-                        <!-- Lock -->
-                        <svg v-else-if="benefit.icon === 'lock'"
-                            class="w-7 h-7 text-[#0F1113] group-hover:text-white transition-colors" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                        </svg>
-                    </div>
+    <BaseContainer class="relative z-10">
+      <!-- Section Header -->
+      <div class="text-center mb-16">
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-4">
+          <span class="text-xs font-bold text-primary uppercase tracking-wider">Por que nos escolher</span>
+        </span>
+        <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-text-main tracking-tight">
+          Benefícios de comprar conosco
+        </h2>
+      </div>
 
-                    <h3 class="text-base font-bold text-[#0F1113] mb-2">
-                        {{ benefit.title }}
-                    </h3>
-                    <p class="text-sm text-gray-500 max-w-[200px]">
-                        {{ benefit.description }}
-                    </p>
-                </div>
-            </div>
-        </BaseContainer>
-    </section>
+      <!-- Benefits Grid -->
+      <div class="benefits-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+        <div v-for="(benefit, index) in benefits" :key="benefit.title"
+          :ref="el => { if (el) tiltCards[index].elementRef.value = el }" :style="tiltCards[index].style.value"
+          @mousemove="tiltCards[index].onMouseMove" @mouseenter="tiltCards[index].onMouseEnter"
+          @mouseleave="tiltCards[index].onMouseLeave"
+          class="benefit-card group relative bg-surface rounded-3xl p-8 border border-border-sutil hover:border-primary/40 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_30px_60px_-15px_rgba(96,165,250,0.15)]">
+
+          <!-- Icon Circle with Luxury Animation -->
+          <div
+            class="w-16 h-16 mb-6 flex items-center justify-center rounded-2xl bg-surface-hover group-hover:bg-primary transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-[0_10px_25px_-5px_rgba(37,99,235,0.4)]">
+            <component :is="iconComponents[benefit.icon]"
+              class="w-7 h-7 text-text-muted group-hover:text-white transition-colors duration-500" />
+          </div>
+
+          <!-- Content -->
+          <h3 class="text-xl font-bold text-text-main mb-3 group-hover:text-primary transition-colors duration-300">
+            {{ benefit.title }}
+          </h3>
+          <p class="text-sm text-text-muted leading-relaxed group-hover:text-text-main/90 transition-colors duration-300">
+            {{ benefit.description }}
+          </p>
+
+          <!-- Glass/Shine Effect Layer -->
+          <div class="absolute inset-0 rounded-3xl overflow-hidden pointer-events-none">
+            <div class="shine-element absolute inset-0 opacity-0 group-hover:opacity-100"></div>
+          </div>
+
+          <!-- Subtle Bottom Border Indicator -->
+          <div
+            class="absolute bottom-0 left-8 right-8 h-1 bg-linear-to-r from-transparent via-primary/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-px">
+          </div>
+        </div>
+      </div>
+    </BaseContainer>
+  </section>
 </template>
+
+<style scoped>
+.benefit-card {
+  /* Garante que o conteúdo fique acima do brilho */
+  isolation: isolate;
+}
+
+.shine-element {
+  background: linear-gradient(135deg,
+      transparent 0%,
+      transparent 45%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 55%,
+      transparent 100%);
+  transform: translateX(-100%);
+  transition: none;
+}
+
+.dark .shine-element {
+  background: linear-gradient(135deg,
+      transparent 0%,
+      transparent 45%,
+      rgba(96, 165, 250, 0.08) 50%,
+      transparent 55%,
+      transparent 100%);
+}
+
+.benefit-card:hover .shine-element {
+  animation: shine-flow 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes shine-flow {
+  from {
+    transform: translateX(-150%) skewX(-20deg);
+  }
+
+  to {
+    transform: translateX(150%) skewX(-20deg);
+  }
+}
+</style>
