@@ -7,7 +7,11 @@ import { existsSync } from "fs";
 import routes from "./routes/index.js";
 import { priceUpdateService } from "./services/priceUpdateService.js";
 
-configDotenv();
+const __appDir = dirname(fileURLToPath(import.meta.url));
+
+// Carrega as variáveis do arquivo .env raiz (se houver) e depois da subpasta api
+configDotenv({ path: join(__appDir, "..", ".env") });
+configDotenv({ path: join(__appDir, ".env") });
 
 const app = express();
 
@@ -25,7 +29,6 @@ app.get("/health", (req, res) => {
 });
 
 // Serve arquivos estáticos do cliente Vue (produção)
-const __appDir = dirname(fileURLToPath(import.meta.url));
 const publicDir = join(__appDir, "public");
 if (existsSync(publicDir)) {
   app.use(express.static(publicDir));
@@ -41,7 +44,12 @@ const PORT = process.env.PORT || "3000";
 const PRICE_UPDATE_INTERVAL = parseInt(process.env.PRICE_UPDATE_INTERVAL) || 21600000;
 
 app.listen(PORT, () => {
-  console.log(`API On! Servidor rodando em http://localhost:${PORT}`);
+  const publicUrl = process.env.CLIENT_URL || (process.env.APP_DOMAIN ? `https://${process.env.APP_DOMAIN}` : null);
+  if (publicUrl) {
+    console.log(`API On! Servidor rodando publicamente em ${publicUrl} (porta interna: ${PORT})`);
+  } else {
+    console.log(`API On! Servidor rodando em http://localhost:${PORT}`);
+  }
   
   // Inicia o serviço de atualização automática de preços
   priceUpdateService.start(PRICE_UPDATE_INTERVAL);
