@@ -20,7 +20,7 @@ const client = axios.create({
     Accept: "application/json, text/plain, */*",
     "Accept-Language": "pt-BR,pt;q=0.9",
     Referer: "https://www.mercadolivre.com.br/",
-    Cookie: process.env.COOKIES,
+    Cookie: process.env.COOKIE_CLIENT || "",
   },
   timeout: 15000,
 });
