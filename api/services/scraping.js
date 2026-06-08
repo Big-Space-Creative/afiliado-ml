@@ -20,6 +20,7 @@ const client = axios.create({
     Accept: "application/json, text/plain, */*",
     "Accept-Language": "pt-BR,pt;q=0.9",
     Referer: "https://www.mercadolivre.com.br/",
+    Cookie: process.env.COOKIES,
   },
   timeout: 15000,
 });
@@ -31,7 +32,9 @@ function asArray(value) {
 }
 
 function firstDefined(...values) {
-  return values.find((value) => value !== undefined && value !== null && value !== "");
+  return values.find(
+    (value) => value !== undefined && value !== null && value !== ""
+  );
 }
 
 function toNumber(value) {
@@ -49,7 +52,11 @@ function normalizeMeliImageUrl(url) {
 }
 
 function uniqueStrings(values) {
-  return [...new Set(values.filter((value) => typeof value === "string" && value.trim()))];
+  return [
+    ...new Set(
+      values.filter((value) => typeof value === "string" && value.trim())
+    ),
+  ];
 }
 
 function findSchemaItem(schema, type) {
@@ -67,7 +74,9 @@ function extractImages(productSchema) {
 function extractReviews(productSchema) {
   return asArray(productSchema?.review)
     .map((review, index) => ({
-      id: review?.["@id"] || `${productSchema?.sku || productSchema?.name || "review"}-${index + 1}`,
+      id:
+        review?.["@id"] ||
+        `${productSchema?.sku || productSchema?.name || "review"}-${index + 1}`,
       author: review?.author?.name || review?.author || null,
       text: review?.reviewBody || null,
       rate: toNumber(review?.reviewRating?.ratingValue),
@@ -100,12 +109,16 @@ function extractVariants(json) {
         variant?.available !== undefined
           ? variant.available
           : variant?.disabled !== undefined
-            ? !variant.disabled
-            : null,
+          ? !variant.disabled
+          : null,
       url: variant?.url || variant?.permalink || null,
-      image: normalizeMeliImageUrl(variant?.picture || variant?.image || variant?.thumbnail),
+      image: normalizeMeliImageUrl(
+        variant?.picture || variant?.image || variant?.thumbnail
+      ),
     }))
-    .filter((variant) => variant.id || variant.name || variant.url || variant.image);
+    .filter(
+      (variant) => variant.id || variant.name || variant.url || variant.image
+    );
 }
 
 async function fetchAndSave(url, original_url) {
@@ -122,7 +135,8 @@ async function fetchAndSave(url, original_url) {
     throw new Error("Dados do produto não encontrados na resposta da API.");
   }
 
-  const productSchema = findSchemaItem(json.schema, "Product") || json.schema[0];
+  const productSchema =
+    findSchemaItem(json.schema, "Product") || json.schema[0];
   const aggregateRating = productSchema.aggregateRating || {};
   const offers = Array.isArray(productSchema.offers)
     ? productSchema.offers[0]
@@ -130,7 +144,9 @@ async function fetchAndSave(url, original_url) {
   const eventData = json.components?.track?.melidata_event?.event_data || {};
   const reviews = extractReviews(productSchema);
   const images = extractImages(productSchema);
-  const rating = toNumber(firstDefined(aggregateRating.ratingValue, aggregateRating.rating));
+  const rating = toNumber(
+    firstDefined(aggregateRating.ratingValue, aggregateRating.rating)
+  );
   const ratingCount = toNumber(
     firstDefined(aggregateRating.ratingCount, aggregateRating.reviewCount)
   );
@@ -147,7 +163,8 @@ async function fetchAndSave(url, original_url) {
   const product_review1 = reviews[0]?.text;
   const product_review2 = reviews[1]?.text;
   const product_review3 = reviews[2]?.text;
-  const product_brand = productSchema.brand?.name || productSchema.brand || null;
+  const product_brand =
+    productSchema.brand?.name || productSchema.brand || null;
   const product_categories = extractCategories(json.schema);
   const product_variants = extractVariants(json);
 
