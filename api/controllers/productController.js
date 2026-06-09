@@ -568,6 +568,83 @@ export async function createProduto(req, res) {
 }
 
 /**
+ * @route POST /api/produtos/manual
+ * @description Cria um produto manualmente sem scraping
+ */
+export async function createProdutoManual(req, res) {
+  try {
+    const title = req.body.title ?? req.body.titulo;
+    const price = req.body.price ?? req.body.preco;
+    const originalPrice = req.body.original_price ?? req.body.preco_original;
+    const imageUrl = req.body.image_url ?? req.body.imagem_url;
+    const productUrl = req.body.product_url ?? req.body.url_produto;
+    const affiliateUrl = req.body.affiliate_url ?? req.body.url_afiliado;
+    const status = normalizeStatus(req.body.status ?? 'active');
+    const featured = req.body.featured ?? req.body.destaque ?? false;
+    const categoryIds = req.body.category_ids ?? req.body.categoria_ids ?? [];
+
+    if (!title || price === undefined || price === null) {
+      return res.status(400).json({
+        success: false,
+        error: 'Campos obrigatórios faltando',
+        message: 'title e price são obrigatórios',
+      });
+    }
+
+    if (!status || !PRODUCT_STATUS.includes(status)) {
+      return res.status(400).json({ success: false, error: 'Status inválido' });
+    }
+
+    if (!Array.isArray(categoryIds)) {
+      return res.status(400).json({
+        success: false,
+        error: 'category_ids inválido',
+        message: 'category_ids deve ser um array de IDs',
+      });
+    }
+
+    let categories = [];
+    if (categoryIds.length > 0) {
+      categories = await Categoria.findAll({ where: { id: categoryIds } });
+      if (categories.length !== categoryIds.length) {
+        return res.status(400).json({
+          success: false,
+          error: 'Categorias inválidas',
+          message: 'Uma ou mais categorias informadas não existem',
+        });
+      }
+    }
+
+    const meliId = `MANUAL-${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+
+    const produto = await Produto.create({
+      meli_id: meliId,
+      title,
+      price,
+      original_price: originalPrice ?? null,
+      image_url: imageUrl ?? null,
+      product_url: productUrl ?? null,
+      affiliate_url: affiliateUrl ?? null,
+      status,
+      featured,
+    });
+
+    if (categoryIds.length > 0) {
+      await produto.addCategories(categories);
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'Produto criado com sucesso.',
+      data: produto,
+    });
+  } catch (error) {
+    console.error('Erro ao criar produto manual:', error.message);
+    res.status(500).json({ success: false, error: 'Erro ao criar produto' });
+  }
+}
+
+/**
  * @route PUT /api/produtos/:id
  * @description Atualiza um produto existente
  * @param {number} id - ID do produto

@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, onUnmounted, ref, watch } from 'vue'
-import { ArrowLeft, CheckCircle2, Link, Plus, Save, FolderTree, ChevronDown, Search, CornerDownRight } from 'lucide-vue-next'
+import { ArrowLeft, CheckCircle2, Link, Plus, Save, FolderTree, ChevronDown, Search, CornerDownRight, PenLine, Bot } from 'lucide-vue-next'
 
 import http from '@/services/http'
 import AdminLayout from '@/components/layout/AdminLayout.vue'
@@ -8,6 +8,7 @@ import BaseButton from '@/components/ui/BaseButton.vue'
 
 const isMobileMenuOpen = ref(false)
 const activeItem = ref('products')
+const isManualMode = ref(false)
 const isScraping = ref(false)
 const isSaving = ref(false)
 const errorMessage = ref('')
@@ -136,6 +137,9 @@ async function loadCategories() {
 }
 
 const canSave = computed(() => {
+  if (isManualMode.value) {
+    return Boolean(form.value.title.trim() && form.value.price !== '')
+  }
   return Boolean(form.value.url.trim() && form.value.title.trim() && form.value.price !== '')
 })
 
@@ -158,6 +162,13 @@ function resetForm() {
 
 function resetAll() {
   resetForm()
+  successMessage.value = ''
+}
+
+function switchMode(mode) {
+  isManualMode.value = mode === 'manual'
+  resetForm()
+  errorMessage.value = ''
   successMessage.value = ''
 }
 
@@ -232,11 +243,12 @@ async function submitForm() {
       category_ids: form.value.category_id ? [form.value.category_id] : [],
     }
 
-    const { data } = await http.post('/produtos/scraping', payload)
+    const endpoint = isManualMode.value ? '/produtos/manual' : '/produtos/scraping'
+    const { data } = await http.post(endpoint, payload)
     successMessage.value = data?.message || 'Produto criado com sucesso.'
     const preservedUrl = form.value.url
     resetForm()
-    form.value.url = preservedUrl
+    if (!isManualMode.value) form.value.url = preservedUrl
   } catch (error) {
     errorMessage.value =
       error?.response?.data?.message || error?.response?.data?.error || 'Erro ao cadastrar produto.'
@@ -307,14 +319,36 @@ onBeforeUnmount(() => {
     </template>
 
     <section class="rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 md:p-5">
-      <div class="mb-5">
-        <h2 class="text-base md:text-lg font-semibold text-gray-950 dark:text-neutral-100">Cadastro com Scraping</h2>
-        <p class="text-sm text-gray-500 dark:text-neutral-400 mt-1">
-          Informe o link, aguarde o scraping automático e ajuste o básico antes de salvar.
-        </p>
+      <div class="mb-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h2 class="text-base md:text-lg font-semibold text-gray-950 dark:text-neutral-100">
+            {{ isManualMode ? 'Cadastro Manual' : 'Cadastro com Scraping' }}
+          </h2>
+          <p class="text-sm text-gray-500 dark:text-neutral-400 mt-1">
+            {{ isManualMode ? 'Preencha os campos manualmente e salve o produto.' : 'Informe o link, aguarde o scraping automático e ajuste o básico antes de salvar.' }}
+          </p>
+        </div>
+        <div class="flex items-center gap-1 rounded-xl border border-gray-200 dark:border-neutral-700 p-1 self-start sm:self-auto shrink-0">
+          <button
+            @click="switchMode('scraping')"
+            class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+            :class="!isManualMode ? 'bg-primary text-white' : 'text-gray-500 dark:text-neutral-400 hover:bg-gray-100 dark:hover:bg-neutral-800'"
+          >
+            <Bot class="w-3.5 h-3.5" />
+            Scraping
+          </button>
+          <button
+            @click="switchMode('manual')"
+            class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+            :class="isManualMode ? 'bg-primary text-white' : 'text-gray-500 dark:text-neutral-400 hover:bg-gray-100 dark:hover:bg-neutral-800'"
+          >
+            <PenLine class="w-3.5 h-3.5" />
+            Manual
+          </button>
+        </div>
       </div>
 
-      <div class="rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 md:p-5 mb-5 shadow-sm">
+      <div v-if="!isManualMode" class="rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 md:p-5 mb-5 shadow-sm">
         <div class="flex items-center justify-between gap-3 mb-4">
           <div>
             <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-neutral-400">Etapa 1</p>
@@ -337,7 +371,7 @@ onBeforeUnmount(() => {
         </label>
       </div>
 
-      <div v-if="preview" class="grid grid-cols-1 lg:grid-cols-[88px_1fr] gap-4 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-800 p-4 mb-5 items-center">
+      <div v-if="!isManualMode && preview" class="grid grid-cols-1 lg:grid-cols-[88px_1fr] gap-4 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-800 p-4 mb-5 items-center">
         <div
           class="w-20 h-20 rounded-lg overflow-hidden border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900"
         >
@@ -362,13 +396,28 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <div v-if="preview" class="rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 md:p-5 mb-5 shadow-sm">
+      <div v-if="preview || isManualMode" class="rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 md:p-5 mb-5 shadow-sm">
         <div class="mb-4">
-          <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-neutral-400">Etapa 2</p>
-          <h3 class="text-sm font-semibold text-gray-900 dark:text-neutral-100">Ajustar dados básicos</h3>
+          <p v-if="!isManualMode" class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-neutral-400">Etapa 2</p>
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-neutral-100">
+            {{ isManualMode ? 'Dados do produto' : 'Ajustar dados básicos' }}
+          </h3>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+          <label v-if="isManualMode" class="flex flex-col gap-1.5 md:col-span-2 min-w-0">
+            <span class="text-sm font-medium text-gray-700 dark:text-neutral-300">URL do produto <span class="text-gray-400 font-normal">(opcional)</span></span>
+            <div class="relative">
+              <Link class="w-4 h-4 text-gray-400 dark:text-neutral-500 absolute left-4 top-1/2 -translate-y-1/2" />
+              <input
+                v-model="form.url"
+                type="url"
+                placeholder="https://www.mercadolivre.com.br/..."
+                class="w-full rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 pl-10 pr-3 py-2.5 text-sm text-gray-900 dark:text-neutral-100 placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors hover:border-gray-300 dark:hover:border-neutral-600"
+              />
+            </div>
+          </label>
+
           <label class="flex flex-col gap-1.5 md:col-span-2 min-w-0">
             <span class="text-sm font-medium text-gray-700 dark:text-neutral-300">Título *</span>
             <input
@@ -535,7 +584,7 @@ onBeforeUnmount(() => {
           variant="primary"
           size="sm"
           class="gap-2"
-          :disabled="!preview || isScraping || isSaving"
+          :disabled="(!preview && !isManualMode) || isScraping || isSaving || !canSave"
           @click="submitForm"
         >
           <Save class="w-4 h-4" />

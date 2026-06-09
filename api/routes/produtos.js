@@ -6,6 +6,7 @@ import {
   goToProduto,
   getProdutoByMlbId,
   createProduto,
+  createProdutoManual,
   updateProduto,
   deleteProduto,
   getProdutosDestaque,
@@ -93,6 +94,7 @@ router.get('/:id', getProduto);
  * @body {number[]} category_ids - Array de IDs de categorias
  */
 router.post('/', requireAuth, createProduto);
+router.post('/manual', requireAuth, createProdutoManual);
 
 /**
  * @route PUT /api/produtos/:id
