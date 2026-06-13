@@ -86,9 +86,7 @@ class PriceUpdateService {
 
   async _checkAndUpdateProduto(produto) {
     try {
-      const scrapeResult = await scrapeProduct(produto.product_url);
-      const scrapedData = typeof scrapeResult === 'string' ? JSON.parse(scrapeResult) : scrapeResult;
-
+      const scrapedData = await scrapeProduct(produto.product_url);
       const scrapedProduto = scrapedData[0];
 
       if (!scrapedProduto) {

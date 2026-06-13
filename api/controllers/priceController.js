@@ -2,18 +2,6 @@ import { priceUpdateService } from '../services/priceUpdateService.js';
 import { scrapeProduct } from '../services/scraping.js';
 import { Produto } from '../models/index.js';
 
-function parseScrapingResult(scrapeResult) {
-  if (typeof scrapeResult !== 'string') {
-    return scrapeResult;
-  }
-
-  try {
-    return JSON.parse(scrapeResult);
-  } catch {
-    return null;
-  }
-}
-
 /**
  * @route POST /api/precos/atualizar
  * @description Aciona manualmente a atualização de preços
@@ -34,8 +22,7 @@ export async function atualizarPrecos(req, res) {
 
       console.log(`[Controller] Atualizando produto ${produto.meli_id}...`);
 
-      const scrapeResult = await scrapeProduct(produto.product_url);
-      const scrapedData = parseScrapingResult(scrapeResult);
+      const scrapedData = await scrapeProduct(produto.product_url);
 
       if (!Array.isArray(scrapedData)) {
         return res.status(502).json({

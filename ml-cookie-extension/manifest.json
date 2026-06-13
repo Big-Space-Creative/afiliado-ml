@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "ML Cookie Sync",
+  "version": "1.0",
+  "description": "Sincroniza o cookie do Mercado Livre com o sistema de afiliados.",
+  "permissions": ["cookies", "activeTab"],
+  "host_permissions": [
+    "https://*.mercadolivre.com.br/*",
+    "https://*.mercadolibre.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "icon.png"
+    }
+  },
+  "icons": {
+    "48": "icon.png"
+  }
+}

@@ -6,11 +6,13 @@ import categoriasRoutes from "./categorias.js";
 import usuariosRoutes from "./usuarios.js";
 import precosRoutes from "./precos.js";
 import dashboardRoutes from "./dashboard.js";
+import configRoutes from "./config.js";
 
 const router = express.Router();
 
 // Registra todas as rotas da API
 // IMPORTANTE: Rotas específicas devem vir antes das rotas com parâmetros (:id)
+router.use("/config", configRoutes);
 router.use("/dashboard", dashboardRoutes);
 router.use("/scrape", scrapingRoutes);
 router.use("/scraping", scrapingRoutes);

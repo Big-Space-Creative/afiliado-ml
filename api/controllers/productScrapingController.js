@@ -1,19 +1,12 @@
-import { scrapeProduct as scrapeProductService } from '../services/scraping.js';
+import {
+  extractMlbId,
+  isMercadoLivreUrl,
+  isValidUrl,
+  scrapeProduct as scrapeProductService,
+} from '../services/scraping.js';
 import { Produto } from '../models/index.js';
 
 const ALLOWED_STATUS = ['active', 'inactive', 'out_of_stock'];
-
-function parseScrapingResult(scrapeResult) {
-  if (typeof scrapeResult !== 'string') {
-    return scrapeResult;
-  }
-
-  try {
-    return JSON.parse(scrapeResult);
-  } catch {
-    return null;
-  }
-}
 
 function parseNullableNumber(value) {
   if (value === undefined || value === null || value === '') return null;
@@ -78,16 +71,15 @@ export async function scrapeAndCreateProduto(req, res) {
     }
 
     const productData = await scrapeProductService(url);
-    const parsedData = parseScrapingResult(productData);
 
-    if (!Array.isArray(parsedData)) {
+    if (!Array.isArray(productData)) {
       return res.status(502).json({
         success: false,
         error: 'Erro ao processar dados de scraping',
       });
     }
 
-    const produto = parsedData[0];
+    const produto = productData[0];
 
     if (!produto || !produto.title || produto.price === undefined || produto.price === null || !produto.url) {
       return res.status(400).json({
@@ -209,9 +201,8 @@ export async function scrapeProduto(req, res) {
     }
 
     const productData = await scrapeProductService(url);
-    const parsedData = parseScrapingResult(productData);
 
-    if (!Array.isArray(parsedData)) {
+    if (!Array.isArray(productData)) {
       return res.status(502).json({
         success: false,
         error: 'Erro ao processar dados de scraping',
@@ -220,7 +211,7 @@ export async function scrapeProduto(req, res) {
 
     res.json({
       success: true,
-      data: parsedData,
+      data: productData,
     });
   } catch (error) {
     console.error('Erro no scraping:', error.message);
@@ -229,27 +220,4 @@ export async function scrapeProduto(req, res) {
       error: 'Erro ao fazer scraping',
     });
   }
-}
-
-function isValidUrl(url) {
-  try {
-    new URL(url);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function isMercadoLivreUrl(url) {
-  try {
-    const parsedUrl = new URL(url);
-    return /mercadolivre\.com(\.br)?$/.test(parsedUrl.hostname);
-  } catch {
-    return false;
-  }
-}
-
-function extractMlbId(url) {
-  const match = url.match(/MLB[\w\d]+/);
-  return match ? match[0] : null;
 }

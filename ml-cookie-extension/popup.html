@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      width: 260px;
+      background: #fff;
+      color: #111;
+    }
+
+    .header {
+      background: #FFE600;
+      padding: 14px 16px 10px;
+    }
+
+    .header h1 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .header p {
+      font-size: 11px;
+      color: #555;
+      margin-top: 2px;
+    }
+
+    .body {
+      padding: 14px 16px;
+    }
+
+    #btn {
+      width: 100%;
+      padding: 10px;
+      background: #3483FA;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    #btn:hover:not(:disabled) { background: #2968c8; }
+    #btn:disabled { background: #aaa; cursor: not-allowed; }
+
+    #status {
+      margin-top: 10px;
+      padding: 8px 10px;
+      border-radius: 7px;
+      font-size: 12px;
+      display: none;
+    }
+
+    #status.success {
+      background: #e6f9f0;
+      color: #1a7a4a;
+      border: 1px solid #a3e6c4;
+      display: block;
+    }
+
+    #status.error {
+      background: #fdecea;
+      color: #b71c1c;
+      border: 1px solid #f5c6c2;
+      display: block;
+    }
+
+    #status.info {
+      background: #e8f0fe;
+      color: #1a56db;
+      border: 1px solid #b3c8fc;
+      display: block;
+    }
+
+    .hint {
+      margin-top: 10px;
+      font-size: 10px;
+      color: #999;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🍪 ML Cookie Sync</h1>
+    <p>Sincroniza o cookie com o sistema</p>
+  </div>
+
+  <div class="body">
+    <button id="btn">Sincronizar Cookie</button>
+    <div id="status"></div>
+    <p class="hint">Clique enquanto estiver no Mercado Livre com sua conta logada.</p>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

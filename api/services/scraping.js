@@ -1,29 +1,56 @@
 import axios from "axios";
 
-const PRODUCT_ID_PATTERN = /MLB\d+/i;
+const CATALOG_ID_PATTERN = /\bMLB[A-Z]?\d{6,12}\b/i;
+const N8N_SCRAPING_WEBHOOK =
+  process.env.N8N_SCRAPING_WEBHOOK_URL ||
+  "https://webhooks.bigspacecreative.com.br/webhook/ee9ecc98-daae-44f5-87c3-17bf34b58190";
 
 export async function scrapeProduct(url) {
-  const url_original = url;
-  const product_id_match = url_original.match(PRODUCT_ID_PATTERN);
-  if (!product_id_match || !product_id_match[0]) {
-    throw new Error("ID do produto não encontrado na URL.");
+  const productId = extractMlbId(url);
+  if (!productId) {
+    throw new Error(
+      "ID do produto não encontrado na URL. " +
+      "Use a URL da página do produto no Mercado Livre (ex: mercadolivre.com.br/.../p/MLB...)."
+    );
   }
-  const formatted_id = product_id_match[0].toUpperCase();
-  const url_api = `https://www.mercadolivre.com.br/p/api/deferred?id=${formatted_id}&app=pdp&component_ids=open_box_alternatives&allow_test_items=false`;
-  return await fetchAndSave(url_api, url);
+
+  return await fetchProduct(productId, url);
 }
 
-const client = axios.create({
-  headers: {
-    "User-Agent":
-      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
-    Accept: "application/json, text/plain, */*",
-    "Accept-Language": "pt-BR,pt;q=0.9",
-    Referer: "https://www.mercadolivre.com.br/",
-    Cookie: process.env.COOKIE_CLIENT || "",
-  },
-  timeout: 15000,
-});
+export function extractMlbId(input) {
+  if (!input) return null;
+
+  // Remove o hash — IDs no fragmento (#) são dados de rastreamento, não o produto
+  const withoutHash = input.split("#")[0];
+
+  // Prioriza o ID do path da URL (ignora query string se possível)
+  try {
+    const { pathname } = new URL(withoutHash);
+    const pathMatch = pathname.match(CATALOG_ID_PATTERN);
+    if (pathMatch) return pathMatch[0].toUpperCase();
+  } catch { /* não é URL válida, tenta direto */ }
+
+  const match = withoutHash.match(CATALOG_ID_PATTERN);
+  return match ? match[0].toUpperCase() : null;
+}
+
+export function isValidUrl(url) {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function isMercadoLivreUrl(url) {
+  try {
+    const parsedUrl = new URL(url);
+    return /mercadolivre\.com(\.br)?$/.test(parsedUrl.hostname);
+  } catch {
+    return false;
+  }
+}
 
 function asArray(value) {
   if (Array.isArray(value)) return value;
@@ -121,19 +148,45 @@ function extractVariants(json) {
     );
 }
 
-async function fetchAndSave(url, original_url) {
-  const url_af = url;
-  const response = await client.get(url);
-  const products = [];
+async function fetchProduct(productId, originalUrl) {
+  console.log(`[Scraping] Buscando produto: ${productId}`);
+  console.log(`[Scraping] Webhook: ${N8N_SCRAPING_WEBHOOK}`);
 
-  const json =
-    typeof response.data === "string"
-      ? JSON.parse(response.data)
-      : response.data;
+  const { data: json, status } = await axios.post(
+    N8N_SCRAPING_WEBHOOK,
+    { product_id: productId },
+    {
+      timeout: 20000,
+      validateStatus: (s) => s < 500,
+    }
+  );
+
+  console.log(`[Scraping] Status HTTP: ${status}`);
+  console.log(`[Scraping] Chaves da resposta: ${Object.keys(json || {}).join(", ") || "(vazio)"}`);
+
+  // Erro de autenticação retornado pelo n8n (cookie expirado)
+  if (status === 401 || json?.error) {
+    const msg = json?.instrucao || json?.error || "Cookie do Mercado Livre expirado.";
+    console.error(`[Scraping] Erro de autenticação: ${msg}`);
+    throw new Error(msg);
+  }
+
+  // Erro retornado pela própria API do ML (ex: produto não encontrado)
+  if (json?.status && json.status !== 200) {
+    const msg =
+      json.status === 404
+        ? `Produto ${productId} não encontrado. Este tipo de URL pode não ser suportado — tente a URL da página de catálogo (/p/MLB...).`
+        : json?.displayMessage || `Erro da API do ML (status ${json.status})`;
+    console.error(`[Scraping] Erro da API do ML:`, json);
+    throw new Error(msg);
+  }
 
   if (!json.schema || !Array.isArray(json.schema) || !json.schema[0]) {
+    console.error(`[Scraping] Schema ausente. Resposta:`, JSON.stringify(json).slice(0, 300));
     throw new Error("Dados do produto não encontrados na resposta da API.");
   }
+
+  console.log(`[Scraping] Schema encontrado com ${json.schema.length} item(s).`);
 
   const productSchema =
     findSchemaItem(json.schema, "Product") || json.schema[0];
@@ -154,7 +207,7 @@ async function fetchAndSave(url, original_url) {
   const product_id = json.id;
   const product_title = productSchema.name;
   const product_image = images[0] || normalizeMeliImageUrl(productSchema.image);
-  const product_url = original_url;
+  const product_url = originalUrl;
   const product_rate = rating;
   const product_rateCount = ratingCount;
   const product_price = toNumber(firstDefined(offers.price, eventData.price));
@@ -175,7 +228,7 @@ async function fetchAndSave(url, original_url) {
     image_high_quality: product_image,
     images,
     url: product_url,
-    url_afiliado: url_af,
+    url_afiliado: originalUrl,
     rate: product_rate,
     rateCount: product_rateCount,
     rating: product_rate,
@@ -195,8 +248,5 @@ async function fetchAndSave(url, original_url) {
     categories: product_categories,
     variants: product_variants,
   };
-  products.push(product);
-  const formatted = JSON.stringify(products, null, 2);
-
-  return formatted;
+  return [product];
 }

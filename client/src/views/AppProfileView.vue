@@ -9,13 +9,16 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 // 4. Icons
-import { LogOut, RefreshCw, UserRound } from 'lucide-vue-next'
+import { CheckCircle2, Cookie, LogOut, RefreshCw, UserRound } from 'lucide-vue-next'
 
 // 5. Components - UI/Layout
 import AdminLayout from '@/components/layout/AdminLayout.vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
 
-// 6. Refs & reactive
+// 6. Services
+import http from '@/services/http'
+
+// 7. Refs & reactive
 const authStore = useAuthStore()
 const router = useRouter()
 
@@ -24,6 +27,12 @@ const activeItem = ref('profile')
 const isRefreshing = ref(false)
 const errorMessage = ref('')
 const isReady = ref(false)
+
+// Cookie ML
+const cookieValue = ref('')
+const isSavingCookie = ref(false)
+const cookieSuccess = ref('')
+const cookieError = ref('')
 
 // 7. Computed
 const profile = computed(() => authStore.user || null)
@@ -63,6 +72,28 @@ async function refreshProfile() {
 function logout() {
   authStore.logout()
   router.push('/auth/login')
+}
+
+async function saveMlCookie() {
+  cookieSuccess.value = ''
+  cookieError.value = ''
+
+  if (!cookieValue.value.trim()) {
+    cookieError.value = 'Cole o cookie antes de salvar.'
+    return
+  }
+
+  isSavingCookie.value = true
+  try {
+    await http.post('/config/ml-cookie', { cookie: cookieValue.value.trim() })
+    cookieSuccess.value = 'Cookie atualizado com sucesso!'
+    cookieValue.value = ''
+  } catch (error) {
+    cookieError.value =
+      error?.response?.data?.error || 'Erro ao atualizar o cookie. Tente novamente.'
+  } finally {
+    isSavingCookie.value = false
+  }
 }
 
 onMounted(refreshProfile)
@@ -141,6 +172,60 @@ onMounted(refreshProfile)
         class="mt-5 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700"
       >
         {{ errorMessage }}
+      </div>
+    </section>
+
+    <section class="mt-5 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 md:p-5">
+      <div class="flex items-center gap-3 mb-4">
+        <Cookie class="w-5 h-5 text-gray-500 dark:text-neutral-400" />
+        <div>
+          <h2 class="text-base font-semibold text-gray-950 dark:text-neutral-100">Cookie do Mercado Livre</h2>
+          <p class="text-xs text-gray-500 dark:text-neutral-400 mt-0.5">
+            Necessário para o scraping de produtos. Copie do navegador quando expirar.
+          </p>
+        </div>
+      </div>
+
+      <label class="flex flex-col gap-1.5">
+        <span class="text-sm font-medium text-gray-700 dark:text-neutral-300">Valor do cookie</span>
+        <textarea
+          v-model="cookieValue"
+          rows="4"
+          placeholder="Cole aqui o conteúdo do header Cookie copiado do navegador..."
+          class="w-full rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-2.5 text-sm text-gray-900 dark:text-neutral-100 placeholder:text-gray-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors hover:border-gray-300 dark:hover:border-neutral-600 resize-none font-mono"
+        />
+      </label>
+
+      <p class="mt-2 text-xs text-gray-400 dark:text-neutral-500">
+        Como obter: F12 → Network → clique numa requisição do mercadolivre.com.br → Headers → copie o valor de <code class="bg-gray-100 dark:bg-neutral-800 px-1 rounded">cookie:</code>
+      </p>
+
+      <div
+        v-if="cookieError"
+        class="mt-3 rounded-xl border border-red-200 bg-red-50 dark:border-red-500/30 dark:bg-red-500/10 p-3 text-sm text-red-700 dark:text-red-400"
+      >
+        {{ cookieError }}
+      </div>
+
+      <div
+        v-if="cookieSuccess"
+        class="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 dark:border-emerald-500/30 dark:bg-emerald-500/10 p-3 text-sm text-emerald-700 dark:text-emerald-300 flex items-center gap-2"
+      >
+        <CheckCircle2 class="w-4 h-4 shrink-0" />
+        {{ cookieSuccess }}
+      </div>
+
+      <div class="mt-4 flex justify-end">
+        <BaseButton
+          variant="primary"
+          size="sm"
+          class="gap-2"
+          :disabled="isSavingCookie || !cookieValue.trim()"
+          @click="saveMlCookie"
+        >
+          <Cookie class="w-4 h-4" />
+          {{ isSavingCookie ? 'Salvando...' : 'Salvar Cookie' }}
+        </BaseButton>
       </div>
     </section>
   </AdminLayout>

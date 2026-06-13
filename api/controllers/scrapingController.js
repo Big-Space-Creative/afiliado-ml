@@ -1,16 +1,8 @@
-import { scrapeProduct as scrapeProductService } from "../services/scraping.js";
-
-function parseScrapingResult(scrapeResult) {
-  if (typeof scrapeResult !== "string") {
-    return scrapeResult;
-  }
-
-  try {
-    return JSON.parse(scrapeResult);
-  } catch {
-    return null;
-  }
-}
+import {
+  isMercadoLivreUrl,
+  isValidUrl,
+  scrapeProduct as scrapeProductService,
+} from "../services/scraping.js";
 
 /**
  * @route GET /api/scrape/scrape
@@ -19,7 +11,6 @@ function parseScrapingResult(scrapeResult) {
 export async function scrapeProductController(req, res) {
   const { url } = req.query;
 
-  // Valida se a URL foi fornecida
   if (!url) {
     return res.status(400).json({
       success: false,
@@ -28,7 +19,6 @@ export async function scrapeProductController(req, res) {
     });
   }
 
-  // Valida o formato da URL
   if (!isValidUrl(url) || !isMercadoLivreUrl(url)) {
     return res.status(400).json({
       success: false,
@@ -39,9 +29,8 @@ export async function scrapeProductController(req, res) {
 
   try {
     const productData = await scrapeProductService(url);
-    const parsedData = parseScrapingResult(productData);
 
-    if (!Array.isArray(parsedData)) {
+    if (!Array.isArray(productData)) {
       return res.status(502).json({
         success: false,
         error: "Erro ao processar dados de scraping",
@@ -50,7 +39,7 @@ export async function scrapeProductController(req, res) {
 
     res.json({
       success: true,
-      data: parsedData,
+      data: productData,
     });
   } catch (error) {
     console.error("Erro no controller de scraping:", error.message);
@@ -58,28 +47,5 @@ export async function scrapeProductController(req, res) {
       success: false,
       error: "Erro ao acessar o link",
     });
-  }
-}
-
-/**
- * Valida se uma string é uma URL válida
- * @param {string} url - URL a validar
- * @returns {boolean} True se válida, false caso contrário
- */
-function isValidUrl(url) {
-  try {
-    new URL(url);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function isMercadoLivreUrl(url) {
-  try {
-    const parsedUrl = new URL(url);
-    return /mercadolivre\.com(\.br)?$/.test(parsedUrl.hostname);
-  } catch {
-    return false;
   }
 }

@@ -290,7 +290,30 @@ export async function loginUsuario(req, res) {
       });
     }
 
-    const usuario = await Usuario.findOne({ where: { email } });
+    // Check for environment-defined admin first
+    const envAdminEmail = process.env.ADMIN_EMAIL;
+    const envAdminPassword = process.env.ADMIN_PASSWORD;
+
+    let usuario = await Usuario.findOne({ where: { email } });
+
+    // If matches .env admin but not in DB, auto-create it
+    if (envAdminEmail && envAdminPassword && email === envAdminEmail && password === envAdminPassword) {
+      if (!usuario) {
+        console.log(`Auto-criando usuário admin do .env: ${email}`);
+        const password_hash = await bcrypt.hash(password, 10);
+        usuario = await Usuario.create({
+          name: 'Administrador',
+          email,
+          password_hash,
+          is_active: true,
+        });
+      } else {
+        // If it exists but is inactive, reactivate it if it matches .env
+        if (!usuario.is_active) {
+          await usuario.update({ is_active: true });
+        }
+      }
+    }
 
     if (!usuario) {
       return res.status(401).json({
