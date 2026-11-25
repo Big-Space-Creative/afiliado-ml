@@ -1,5 +1,4 @@
 # afiliado-ml
-**Cliente:** Dalberson<br>
 <br>
 **Projeto:**<br>
 Consiste em um sistema de vendas para afiliado do Mercado Livre, em que o Administrador,
